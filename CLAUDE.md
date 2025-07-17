@@ -10,10 +10,11 @@ This is a Python library for terminal text colorization and highlighting, inspir
 
 The project follows modern Python packaging standards with the following structure:
 
-- **src/colorize/**: Main package directory
+- **src/tinty/**: Main package directory
   - `color_codes.py`: Core ANSI color code definitions and ColorManager class
-  - `colorize.py`: Main Colorize class and ColorizedString implementation
-  - `string_extensions.py`: String extension methods and monkey patching
+  - `tinty.py`: Main Colorize class and ColorizedString implementation
+  - `colors.py`: Type-safe color constants for enhanced API
+  - `enhanced.py`: Enhanced colorization API with production-safe patterns
   - `cli.py`: Command-line interface implementation
 - **tests/**: Comprehensive test suite with pytest
 - **examples/**: Demonstration scripts
@@ -91,7 +92,7 @@ pytest
 
 With coverage:
 ```bash
-pytest --cov=colorize
+pytest --cov=tinty
 ```
 
 ### Linting and Formatting
@@ -120,7 +121,7 @@ pre-commit run --all-files
 ### As a Library
 
 ```python
-from colorize import Colorize, ColorizedString
+from tinty import Colorize, ColorizedString
 
 # Basic usage
 colorizer = Colorize()
@@ -136,13 +137,13 @@ highlighted = cs.highlight(r"World", ["blue"])
 
 ```bash
 # Basic usage
-echo "hello world" | colorize 'l' red
+echo "hello world" | tinty 'l' red
 
 # Pattern highlighting
-echo "hello world" | colorize '(h.*o).*(w.*d)' red blue
+echo "hello world" | tinty '(h.*o).*(w.*d)' red blue
 
 # List available colors
-colorize --list-colors
+tinty --list-colors
 ```
 
 ## Project Configuration

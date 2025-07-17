@@ -52,7 +52,7 @@ print(txt("Warning").yellow())
 
 ```python
 from tinty import (
-    colored, C, txt, ColorString, 
+    colored, C, txt, ColorString,
     RED, GREEN, BLUE, YELLOW, BOLD, DIM, BG_WHITE, BLINK
 )
 
@@ -213,7 +213,7 @@ print(cs.colorize("blue"))
 pytest
 
 # Run with coverage
-pytest --cov=colorize
+pytest --cov=tinty
 
 # Run specific test file
 pytest tests/test_enhanced.py

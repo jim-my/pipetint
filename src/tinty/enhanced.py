@@ -9,11 +9,11 @@ This module provides multiple intuitive interfaces for text colorization:
 """
 
 import re
-from typing import Optional, Union
+from typing import Callable, Optional, Union
 
 from .color_codes import ColorCode, ColorManager, color_manager
-from .colorize import Colorize, ColorizedString, colorize
 from .colors import ColorType
+from .tinty import Colorize, ColorizedString, colorize
 
 
 class ColorString(str):  # noqa: PLR0904
@@ -239,7 +239,7 @@ class ColorContext:
             return ColorString(text)
         return self._colorizer.colorize(text, color)
 
-    def __getattr__(self, color: str) -> callable:
+    def __getattr__(self, color: str) -> Callable[[str], str]:
         """
         Dynamic color methods.
 

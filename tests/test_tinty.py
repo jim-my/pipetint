@@ -5,7 +5,7 @@ Tests for colorize module.
 import pytest
 
 from tinty.color_codes import ColorCode
-from tinty.colorize import Colorize, ColorizedString
+from tinty.tinty import Colorize, ColorizedString
 
 
 class TestColorize:

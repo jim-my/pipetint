@@ -3,7 +3,7 @@ Core colorization functionality.
 """
 
 import re
-from typing import Optional, Union
+from typing import Optional, Union, cast
 
 from .color_codes import ColorCode, ColorManager, color_manager
 
@@ -134,24 +134,27 @@ class ColorizedString(str):
                 groups_to_highlight = list(range(1, match.lastindex + 1))
 
             # Sort groups by end position (reverse order)
-            groups_data = []
-            for grp in groups_to_highlight:
-                if match.group(grp) is not None:
-                    groups_data.append({
-                        "start": match.start(grp),
-                        "end": match.end(grp),
-                        "group": grp,
-                        "text": match.group(grp),
-                    })
+            groups_data = [
+                {
+                    "start": match.start(grp),
+                    "end": match.end(grp),
+                    "group": grp,
+                    "text": match.group(grp),
+                }
+                for grp in groups_to_highlight
+                if match.group(grp) is not None
+            ]
 
             groups_data.sort(key=lambda x: (x["end"], x["group"]), reverse=True)
 
             # Apply colors to each group
             for group_data in groups_data:
-                grp = group_data["group"]
+                grp = cast("int", group_data["group"])
                 color_index = (grp - 1) % len(colors)
                 color = colors[color_index]
-                new_self.add_color(group_data["start"], group_data["end"], color)
+                start = cast("int", group_data["start"])
+                end = cast("int", group_data["end"])
+                new_self.add_color(start, end, color)
 
         # Apply colors
         if new_self._colors_at:
@@ -190,7 +193,10 @@ class ColorizedString(str):
         for pos in sorted(set(positions), reverse=True):
             if 0 <= pos < len(result):
                 char = result[pos]
-                colored_char = f"{self._colorizer.start_color(color)}{swap_color}{char}{self._colorizer.end_color()}"
+                colored_char = (
+                    f"{self._colorizer.start_color(color)}{swap_color}{char}"
+                    f"{self._colorizer.end_color()}"
+                )
                 result[pos] = colored_char
 
         return ColorizedString("".join(result))

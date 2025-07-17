@@ -8,7 +8,7 @@ import contextlib
 import re
 import sys
 
-from .colorize import Colorize, ColorizedString
+from .tinty import Colorize, ColorizedString
 
 
 def create_parser() -> argparse.ArgumentParser:
