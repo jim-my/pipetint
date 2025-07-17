@@ -18,8 +18,8 @@ def create_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  echo "hello world" | tinty 'l.*,' yellow
-  echo "hello world" | tinty '(ll).*(ld)' red:bg_blue blue:bg_red
+  echo "hello world" | tinty 'l.*' yellow
+  echo "hello world" | tinty '(ll).*(ld)' red,bg_blue blue,bg_red
   echo "hello world" | tinty '(l).*(ld)' red bg_red
   echo "hello world" | tinty --list-colors
         """,
@@ -35,8 +35,8 @@ Examples:
     parser.add_argument(
         "colors",
         nargs="*",
-        default=["black:bg_yellow:swapcolor"],
-        help="Colors to apply to matched groups (default: black:bg_yellow:swapcolor)",
+        default=["black,bg_yellow,swapcolor"],
+        help="Colors to apply to matched groups (default: black,bg_yellow,swapcolor)",
     )
 
     parser.add_argument(
@@ -132,7 +132,7 @@ def main():
     if (
         sys.stdin.isatty()
         and args.pattern == "(.*)"
-        and args.colors == ["black:bg_yellow:swapcolor"]
+        and args.colors == ["black,bg_yellow,swapcolor"]
     ):
         parser.print_help()
         return

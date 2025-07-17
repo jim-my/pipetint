@@ -7,9 +7,13 @@ default:
 
 # Development setup
 setup:
-    pip install -e .
-    pip install -r requirements-dev.txt || echo "No requirements-dev.txt found"
+    pip install -e ".[dev]"
     pre-commit install
+
+# Development setup with Poetry
+setup-poetry:
+    poetry install --with dev
+    poetry run pre-commit install
 
 # Run tests
 test:
@@ -52,9 +56,17 @@ clean:
 build: clean
     python -m build
 
+# Build package with Poetry
+build-poetry: clean
+    poetry build
+
 # Build and check package
 build-check: build
     twine check dist/*
+
+# Build package with Poetry (check via regular build-check if needed)
+build-check-poetry: build-poetry
+    @echo "✅ Poetry build complete. Use 'just build-check' for validation if needed."
 
 # Install package locally in development mode
 install-dev:
