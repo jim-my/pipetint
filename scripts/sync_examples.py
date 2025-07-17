@@ -63,18 +63,18 @@ def generate_script_files():
         if name == "cli_examples":
             # Generate bash script
             bash_content = "#!/bin/bash\n" + "\n".join(config["bash_lines"])
-            (scripts_dir / f"{name}.sh").write_text(bash_content)
+            (scripts_dir / f"{name}.sh").write_text(bash_content, encoding="utf-8")
         else:
             # Generate Python script
             lines = [config["imports"], ""] + config["code_lines"]
             py_content = "\n".join(lines) + "\n"
-            (scripts_dir / f"{name}.py").write_text(py_content)
+            (scripts_dir / f"{name}.py").write_text(py_content, encoding="utf-8")
 
 
 def update_readme():
     """Update README.md with consistent examples."""
     readme_path = Path("README.md")
-    readme_content = readme_path.read_text()
+    readme_content = readme_path.read_text(encoding="utf-8")
 
     # Pattern to match each example section
     for name, config in EXAMPLES.items():
@@ -91,7 +91,7 @@ def update_readme():
 
         readme_content = re.sub(pattern, replacement, readme_content, flags=re.DOTALL)
 
-    readme_path.write_text(readme_content)
+    readme_path.write_text(readme_content, encoding="utf-8")
 
 
 def main():
