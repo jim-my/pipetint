@@ -3,7 +3,17 @@
 Demo script showing tinty library functionality.
 """
 
-from tinty import Colorize, ColorizedString
+from tinty import (
+    BLUE,
+    BRIGHT,
+    CYAN,
+    GREEN,
+    RED,
+    UNDERLINE,
+    YELLOW,
+    Colorize,
+    ColorizedString,
+)
 
 
 def demo_basic_colorization():
@@ -13,13 +23,13 @@ def demo_basic_colorization():
     colorizer = Colorize()
 
     # Basic colors
-    print(colorizer.colorize("Red text", "red"))
-    print(colorizer.colorize("Green text", "green"))
-    print(colorizer.colorize("Blue background", "bg_blue"))
+    print(colorizer.colorize("Red text", RED))
+    print(colorizer.colorize("Green text", GREEN))
+    print(colorizer.colorize("Blue background", BLUE))
 
     # Styles
-    print(colorizer.colorize("Bold text", "bright"))
-    print(colorizer.colorize("Underlined text", "underline"))
+    print(colorizer.colorize("Bold text", BRIGHT))
+    print(colorizer.colorize("Underlined text", UNDERLINE))
 
     print()
 
@@ -48,16 +58,16 @@ def demo_pattern_highlighting():
     text = ColorizedString("Hello World! This is a test.")
 
     # Highlight all 'l' characters
-    print("Highlight 'l':", text.highlight(r"l", ["red"]))
+    print("Highlight 'l':", text.highlight(r"l", [RED]))
 
     # Highlight words
-    print("Highlight words:", text.highlight(r"\w+", ["blue"]))
+    print("Highlight words:", text.highlight(r"\w+", [BLUE]))
 
     # Highlight with groups
-    print("Highlight groups:", text.highlight(r"(H)(ello)", ["red", "green"]))
+    print("Highlight groups:", text.highlight(r"(H)(ello)", [RED, GREEN]))
 
     # Case-insensitive highlighting
-    print("Case insensitive:", text.highlight(r"hello", ["yellow"]))
+    print("Case insensitive:", text.highlight(r"hello", [YELLOW]))
 
     print()
 
@@ -69,8 +79,8 @@ def demo_position_highlighting():
     text = ColorizedString("Hello World")
 
     # Highlight specific positions
-    print("Positions [0, 6]:", text.highlight_at([0, 6], "yellow"))
-    print("Positions [1, 2, 3]:", text.highlight_at([1, 2, 3], "red"))
+    print("Positions [0, 6]:", text.highlight_at([0, 6], YELLOW))
+    print("Positions [1, 2, 3]:", text.highlight_at([1, 2, 3], RED))
 
     print()
 
@@ -113,13 +123,13 @@ def demo_modern_api():
     """Demonstrate modern production-safe API."""
     print("=== Modern Production-Safe API ===")
 
-    from tinty import colored, txt, C, RED, BLUE, UNDERLINE, YELLOW
-    
+    from tinty import BLUE, RED, C, colored, txt
+
     # Type-safe constants (recommended)
     print(colored("Red text") | RED)
-    print(txt("Blue background") | BLUE)  
+    print(txt("Blue background") | BLUE)
     print(colored("Underlined") | UNDERLINE)
-    
+
     # Global convenience object
     print(C.red("Also red text"))
     print(C("Flexible") | BLUE | UNDERLINE)
@@ -148,14 +158,14 @@ def demo_complex_example():
         colored_line = ColorizedString(line)
 
         # Highlight log levels
-        colored_line = colored_line.highlight(r"(INFO)", ["green"])
-        colored_line = colored_line.highlight(r"(DEBUG)", ["blue"])
-        colored_line = colored_line.highlight(r"(WARNING)", ["yellow"])
-        colored_line = colored_line.highlight(r"(ERROR)", ["red"])
+        colored_line = colored_line.highlight(r"(INFO)", [GREEN])
+        colored_line = colored_line.highlight(r"(DEBUG)", [BLUE])
+        colored_line = colored_line.highlight(r"(WARNING)", [YELLOW])
+        colored_line = colored_line.highlight(r"(ERROR)", [RED])
 
         # Highlight timestamps
         colored_line = colored_line.highlight(
-            r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", ["cyan"]
+            r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", [CYAN]
         )
 
         print(colored_line)

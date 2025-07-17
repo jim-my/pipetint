@@ -18,10 +18,10 @@ def create_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  echo "hello world" | colorize 'l.*,' yellow
-  echo "hello world" | colorize '(ll).*(ld)' red:bg_blue blue:bg_red
-  echo "hello world" | colorize '(l).*(ld)' red bg_red
-  echo "hello world" | colorize --list-colors
+  echo "hello world" | tinty 'l.*,' yellow
+  echo "hello world" | tinty '(ll).*(ld)' red:bg_blue blue:bg_red
+  echo "hello world" | tinty '(l).*(ld)' red bg_red
+  echo "hello world" | tinty --list-colors
         """,
     )
 

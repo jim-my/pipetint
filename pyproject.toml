@@ -25,7 +25,7 @@ classifiers = [
     "Topic :: Terminals",
     "Topic :: Text Processing",
 ]
-keywords = ["color", "colorize", "terminal", "ansi", "highlighting"]
+keywords = ["color", "terminal", "ansi", "highlighting", "text", "cli"]
 dependencies = []
 
 [project.optional-dependencies]
@@ -43,10 +43,10 @@ cli = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/jimmyyan/colorize"
-Documentation = "https://github.com/jimmyyan/colorize"
-Repository = "https://github.com/jimmyyan/colorize"
-Issues = "https://github.com/jimmyyan/colorize/issues"
+Homepage = "https://github.com/jimmyyan/tinty"
+Documentation = "https://github.com/jimmyyan/tinty"
+Repository = "https://github.com/jimmyyan/tinty"
+Issues = "https://github.com/jimmyyan/tinty/issues"
 
 [project.scripts]
 tinty = "tinty.cli:main"
@@ -178,25 +178,25 @@ ignore = [
     "PLC0415", # Import at top level (allow in examples)
     "E501",    # Line too long (examples can be longer)
 ]
-"src/colorize/cli.py" = [
+"src/tinty/cli.py" = [
     "T201",    # Allow print statements in CLI
     "PERF203", # try-except in loop (acceptable for CLI)
     "E501",    # Line too long (CLI can be longer)
     "E303",    # Too many blank lines (formatting preference)
 ]
-"src/colorize/color_codes.py" = [
+"src/tinty/color_codes.py" = [
     "PLC0415", # Import at top level (re import in function)
     "E501",    # Line too long (regex pattern)
     "PLR6301", # Method could be static (keeping as instance methods for consistency)
     "PLR6201", # Use set literal (tuple is intentional for readability)
 ]
-"src/colorize/colorize.py" = [
+"src/tinty/colorize.py" = [
     "PLR0912", # Too many branches (complex highlighting logic)
     "ARG002",  # Unused argument (value in __init__)
     "PERF401", # List comprehension suggestion (readability over perf)
     "E501",    # Line too long (complex type signatures)
 ]
-"src/colorize/string_extensions.py" = [
+"src/tinty/string_extensions.py" = [
     "PLC0415", # Import at top level (circular import handling)
     "E501",    # Line too long (complex type signatures)
 ]

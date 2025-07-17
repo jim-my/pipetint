@@ -148,7 +148,7 @@ class TestMain:
         with patch("sys.stdin") as mock_stdin:
             mock_stdin.isatty.return_value = True
 
-            with patch("sys.argv", ["colorize"]):
+            with patch("sys.argv", ["tinty"]):
                 with patch("tinty.cli.create_parser") as mock_parser:
                     mock_parser_instance = MagicMock()
                     mock_parser.return_value = mock_parser_instance
@@ -163,14 +163,14 @@ class TestMain:
 
     def test_main_list_colors(self):
         """Test main with list colors option."""
-        with patch("sys.argv", ["colorize", "--list-colors"]):
+        with patch("sys.argv", ["tinty", "--list-colors"]):
             with patch("tinty.cli.list_colors") as mock_list_colors:
                 main()
                 mock_list_colors.assert_called_once()
 
     def test_main_invalid_regex(self):
         """Test main with invalid regex pattern."""
-        with patch("sys.argv", ["colorize", "[invalid"]):
+        with patch("sys.argv", ["tinty", "[invalid"]):
             with patch("sys.stdin", io.StringIO("test input\n")):
                 with patch("sys.exit", side_effect=SystemExit(1)) as mock_exit:
                     with pytest.raises(SystemExit):
@@ -181,7 +181,7 @@ class TestMain:
         """Test main processing input."""
         test_input = "hello world\ntest line\n"
 
-        with patch("sys.argv", ["colorize", "l", "red"]):
+        with patch("sys.argv", ["tinty", "l", "red"]):
             with patch("sys.stdin", io.StringIO(test_input)):
                 with patch("sys.stdout", io.StringIO()) as mock_stdout:
                     main()
@@ -202,7 +202,7 @@ class TestMain:
 
     def test_main_keyboard_interrupt(self):
         """Test main handles keyboard interrupt."""
-        with patch("sys.argv", ["colorize", "test"]):
+        with patch("sys.argv", ["tinty", "test"]):
             with patch("sys.stdin") as mock_stdin:
                 mock_stdin.__iter__.side_effect = KeyboardInterrupt()
 
@@ -212,7 +212,7 @@ class TestMain:
 
     def test_main_broken_pipe(self):
         """Test main handles broken pipe."""
-        with patch("sys.argv", ["colorize", "test"]):
+        with patch("sys.argv", ["tinty", "test"]):
             with patch("sys.stdin") as mock_stdin:
                 mock_stdin.__iter__.side_effect = BrokenPipeError()
 
@@ -224,7 +224,7 @@ class TestMain:
         """Test main with case sensitive option."""
         test_input = "Hello World\n"
 
-        with patch("sys.argv", ["colorize", "h", "red", "--case-sensitive"]):
+        with patch("sys.argv", ["tinty", "h", "red", "--case-sensitive"]):
             with patch("sys.stdin", io.StringIO(test_input)):
                 with patch("sys.stdout", io.StringIO()) as mock_stdout:
                     main()
@@ -240,7 +240,7 @@ class TestMain:
         """Test main with verbose option."""
         test_input = "hello world\n"
 
-        with patch("sys.argv", ["colorize", "l", "red", "--verbose"]):
+        with patch("sys.argv", ["tinty", "l", "red", "--verbose"]):
             with patch("sys.stdin", io.StringIO(test_input)):
                 with patch("sys.stdout", io.StringIO()):
                     with patch("sys.stderr", io.StringIO()) as mock_stderr:
@@ -261,7 +261,7 @@ class TestCLIIntegration:
         """Test basic CLI usage."""
         test_input = "hello world\n"
 
-        with patch("sys.argv", ["colorize", "l", "red"]):
+        with patch("sys.argv", ["tinty", "l", "red"]):
             with patch("sys.stdin", io.StringIO(test_input)):
                 with patch("sys.stdout", io.StringIO()) as mock_stdout:
                     main()
@@ -282,7 +282,7 @@ class TestCLIIntegration:
         """Test CLI with multiple colors."""
         test_input = "hello world\n"
 
-        with patch("sys.argv", ["colorize", "(h)(ello)", "red", "blue"]):
+        with patch("sys.argv", ["tinty", "(h)(ello)", "red", "blue"]):
             with patch("sys.stdin", io.StringIO(test_input)):
                 with patch("sys.stdout", io.StringIO()) as mock_stdout:
                     main()
@@ -303,7 +303,7 @@ class TestCLIIntegration:
         """Test CLI with default pattern."""
         test_input = "hello world\n"
 
-        with patch("sys.argv", ["colorize"]):
+        with patch("sys.argv", ["tinty"]):
             with patch("sys.stdin", io.StringIO(test_input)):
                 with patch("sys.stdout", io.StringIO()) as mock_stdout:
                     main()
@@ -324,7 +324,7 @@ class TestCLIIntegration:
         """Test CLI with pattern that doesn't match."""
         test_input = "hello world\n"
 
-        with patch("sys.argv", ["colorize", "xyz"]):
+        with patch("sys.argv", ["tinty", "xyz"]):
             with patch("sys.stdin", io.StringIO(test_input)):
                 with patch("sys.stdout", io.StringIO()) as mock_stdout:
                     main()

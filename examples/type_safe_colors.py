@@ -19,13 +19,12 @@ from tinty import (
     BLUE,
     BOLD,
     BRIGHT,
-    C,
     CYAN,
     GREEN,
     RED,
     UNDERLINE,
-    WHITE,
     YELLOW,
+    C,
     colored,
     txt,
 )
@@ -33,7 +32,7 @@ from tinty import (
 
 def main():
     """Demonstrate type-safe color constants."""
-    
+
     print("🎨 Type-Safe Color Constants Demo")
     print("=" * 40)
     print()
@@ -54,7 +53,7 @@ def main():
     print(f"Error:    {error2}")
     print()
 
-    # Success messages  
+    # Success messages
     print("### Success Messages:")
     success1 = colored("✓ SUCCESS") | GREEN | BOLD
     success2 = txt("✓ COMPLETED") >> GREEN >> BRIGHT
@@ -72,19 +71,15 @@ def main():
 
     # Info messages
     print("### Info Messages:")
-    info1 = colored("ℹ INFO") | BLUE | UNDERLINE
-    info2 = txt("ℹ NOTICE") >> CYAN >> BOLD
+    info1 = colored("i INFO") | BLUE | UNDERLINE
+    info2 = txt("i NOTICE") >> CYAN >> BOLD
     print(f"Info:   {info1}")
     print(f"Notice: {info2}")
     print()
 
     # Complex chaining
     print("### Complex Styling:")
-    complex_msg = (colored("SYSTEM ALERT")
-                  | RED 
-                  | BOLD 
-                  | BG_YELLOW
-                  | UNDERLINE)
+    complex_msg = colored("SYSTEM ALERT") | RED | BOLD | BG_YELLOW | UNDERLINE
     print(f"Alert: {complex_msg}")
     print()
 

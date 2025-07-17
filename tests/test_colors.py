@@ -2,8 +2,6 @@
 Tests for type-safe color constants.
 """
 
-import pytest
-
 from tinty import (
     BG_BLUE,
     BG_RED,
@@ -12,10 +10,10 @@ from tinty import (
     BLUE,
     BOLD,
     BRIGHT,
-    C,
     GREEN,
     RED,
     YELLOW,
+    C,
     colored,
     txt,
 )
@@ -30,7 +28,7 @@ class TestColorConstants:
         result = colored("Error") | RED | BRIGHT | BG_WHITE
         assert isinstance(result, str)
         assert "\033[31m" in str(result)  # Red
-        assert "\033[1m" in str(result)   # Bright
+        assert "\033[1m" in str(result)  # Bright
         assert "\033[107m" in str(result)  # BG_WHITE (bright white)
 
     def test_txt_with_constants(self):
@@ -38,7 +36,7 @@ class TestColorConstants:
         result = txt("Success") >> GREEN >> BOLD
         assert isinstance(result, str)
         assert "\033[32m" in str(result)  # Green
-        assert "\033[1m" in str(result)   # Bold
+        assert "\033[1m" in str(result)  # Bold
 
     def test_c_object_with_constants(self):
         """Test global C object works with constants."""
@@ -55,7 +53,7 @@ class TestColorConstants:
         """Test mixing method calls and constant chaining."""
         result = colored("Mixed").red() | BRIGHT | BG_BLUE
         assert "\033[31m" in str(result)  # Red
-        assert "\033[1m" in str(result)   # Bright
+        assert "\033[1m" in str(result)  # Bright
         assert "\033[44m" in str(result)  # BG_BLUE
 
     def test_constant_values(self):
@@ -64,10 +62,10 @@ class TestColorConstants:
         assert GREEN == "fg_green"
         assert BLUE == "fg_blue"
         assert YELLOW == "fg_yellow"
-        
+
         assert BG_WHITE == "bg_white"
         assert BG_BLUE == "bg_blue"
-        
+
         assert BRIGHT == "bright"
         assert BOLD == "bright"  # Alias
 
@@ -93,7 +91,9 @@ class TestColorConstants:
         assert len(FOREGROUND_COLORS) == 16
         assert len(BACKGROUND_COLORS) == 16
         assert len(STYLES) == 9
-        assert len(ALL_COLORS) == len(FOREGROUND_COLORS) + len(BACKGROUND_COLORS) + len(STYLES)
+        assert len(ALL_COLORS) == len(FOREGROUND_COLORS) + len(BACKGROUND_COLORS) + len(
+            STYLES
+        )
 
         # Verify some constants are in the right collections
         assert RED in FOREGROUND_COLORS
@@ -102,10 +102,7 @@ class TestColorConstants:
 
     def test_type_safety_example(self):
         """Test example showing type safety benefits."""
-        # This would fail type checking with string literals:
-        # colored("Error") | "red" | "typo"  # "typo" is not a valid color
-        
-        # But this works with constants and provides autocompletion:
+        # This works with constants and provides autocompletion:
         result = colored("Error") | RED | BRIGHT
         assert "\033[31m" in str(result)
         assert "\033[1m" in str(result)
@@ -113,7 +110,7 @@ class TestColorConstants:
     def test_constants_with_legacy_api(self):
         """Test that constants work with legacy API too."""
         from tinty import Colorize, ColorizedString
-        
+
         colorizer = Colorize()
         result = colorizer.colorize("hello", RED)
         assert "\033[31m" in result
@@ -153,22 +150,22 @@ class TestConstantUsagePatterns:
         # Test | operator chaining
         result1 = colored("Complex") | RED | BRIGHT | BG_YELLOW
         assert "\033[31m" in str(result1)  # Red
-        assert "\033[1m" in str(result1)   # Bright
+        assert "\033[1m" in str(result1)  # Bright
         assert "\033[43m" in str(result1)  # BG_YELLOW
-        
-        # Test >> operator chaining  
+
+        # Test >> operator chaining
         result2 = txt("Another") >> BLUE >> BOLD
         assert "\033[34m" in str(result2)  # Blue
-        assert "\033[1m" in str(result2)   # Bold
+        assert "\033[1m" in str(result2)  # Bold
 
     def test_constants_are_immutable(self):
         """Test that constants maintain their values."""
         original_red = RED
-        
+
         # Use the constant
         result = colored("test") | RED
         assert "\033[31m" in str(result)
-        
+
         # Constant should be unchanged
-        assert RED == original_red
+        assert original_red == RED
         assert RED == "fg_red"

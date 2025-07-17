@@ -11,7 +11,7 @@ Enhanced API for production use:
     colored("hello").red().bold()
 
     # Operator chaining
-    colored("world") | "blue" | "underline"
+    colored("world") | BLUE | UNDERLINE
 
     # Global convenience object
     C.red("hello")
@@ -21,11 +21,14 @@ Legacy API (still supported):
     from colorize import Colorize, ColorizedString
 
     colorizer = Colorize()
-    colored_text = colorizer.colorize("hello", "red")
+    colored_text = colorizer.colorize("hello", RED)
 """
 
 # Enhanced production-safe API (recommended)
-from .colors import *  # noqa: F403,F401
+# Legacy API (backward compatibility)
+from .color_codes import ColorCode, ColorManager, color_manager
+from .colorize import Colorize, ColorizedString, colorize
+from .colors import *  # noqa: F403
 from .enhanced import (
     C,
     ColorContext,
@@ -34,9 +37,6 @@ from .enhanced import (
     txt,
 )
 
-# Legacy API (backward compatibility)
-from .color_codes import ColorCode, ColorManager, color_manager
-from .colorize import Colorize, ColorizedString, colorize
 # Note: string_extensions module removed - use enhanced API or core classes directly
 
 __version__ = "0.1.0"
@@ -45,17 +45,16 @@ __version__ = "0.1.0"
 from .colors import __all__ as _colors_all
 
 __all__ = [
-    # Enhanced API (recommended)
     "C",
-    "ColorContext", 
-    "ColorString",
-    "colored",
-    "txt",
-    # Legacy API (backward compatibility)
     "ColorCode",
+    "ColorContext",
     "ColorManager",
+    "ColorString",
     "Colorize",
     "ColorizedString",
     "color_manager",
+    "colored",
     "colorize",
-] + _colors_all
+    "txt",
+]
+__all__.extend(_colors_all)

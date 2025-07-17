@@ -9,11 +9,11 @@ This module provides multiple intuitive interfaces for text colorization:
 """
 
 import re
-from typing import Literal, Optional, Union
+from typing import Optional, Union
 
 from .color_codes import ColorCode, ColorManager, color_manager
-from .colors import ColorType
 from .colorize import Colorize, ColorizedString, colorize
+from .colors import ColorType
 
 
 class ColorString(str):  # noqa: PLR0904
@@ -22,8 +22,8 @@ class ColorString(str):  # noqa: PLR0904
 
     Supports method chaining and operator overloading for intuitive usage:
     - ColorString("hello").red().bold()
-    - ColorString("world") | "blue" | "underline"
-    - ColorString("test") >> "green" >> "bg_yellow"
+    - ColorString("world") | BLUE | UNDERLINE
+    - ColorString("test") >> GREEN >> BG_YELLOW
     """
 
     def __new__(cls, value=""):
@@ -71,11 +71,11 @@ class ColorString(str):  # noqa: PLR0904
     # === Operator overloading for chaining ===
 
     def __or__(self, color: ColorType) -> "ColorString":
-        """Chain colors using | operator: text | RED | BOLD """
+        """Chain colors using | operator: text | RED | BOLD"""
         return self.colorize(color)
 
     def __rshift__(self, color: ColorType) -> "ColorString":
-        """Chain colors using >> operator: text >> RED >> BOLD """
+        """Chain colors using >> operator: text >> RED >> BOLD"""
         return self.colorize(color)
 
     # === Foreground colors ===
@@ -215,7 +215,7 @@ class ColorContext:
     Supports multiple usage patterns:
     - C.red("hello")              # Direct color application
     - C("hello").red()            # Factory function with chaining
-    - C("hello", "red")           # Direct colorization
+    - C("hello", RED)           # Direct colorization
     """
 
     def __init__(self):
@@ -271,7 +271,7 @@ def colored(text: str) -> ColorString:
 
     Examples:
         colored("hello").red().bold()
-        colored("world") | "blue" | "underline"
+        colored("world") | BLUE | UNDERLINE
     """
     return ColorString(text)
 
@@ -288,7 +288,7 @@ def txt(text: str) -> ColorString:
 
     Examples:
         txt("hello").red().bold()
-        txt("world") | "blue" | "underline"
+        txt("world") | BLUE | UNDERLINE
     """
     return ColorString(text)
 

@@ -63,58 +63,146 @@ STRIKETHROUGH: Literal["strikethrough"] = "strikethrough"
 
 # Convenience collections
 FOREGROUND_COLORS = [
-    RED, GREEN, BLUE, YELLOW, MAGENTA, CYAN, WHITE, BLACK,
-    LIGHTRED, LIGHTGREEN, LIGHTBLUE, LIGHTYELLOW,
-    LIGHTMAGENTA, LIGHTCYAN, LIGHTGRAY, DARKGRAY
+    RED,
+    GREEN,
+    BLUE,
+    YELLOW,
+    MAGENTA,
+    CYAN,
+    WHITE,
+    BLACK,
+    LIGHTRED,
+    LIGHTGREEN,
+    LIGHTBLUE,
+    LIGHTYELLOW,
+    LIGHTMAGENTA,
+    LIGHTCYAN,
+    LIGHTGRAY,
+    DARKGRAY,
 ]
 
 BACKGROUND_COLORS = [
-    BG_RED, BG_GREEN, BG_BLUE, BG_YELLOW, BG_MAGENTA, BG_CYAN, BG_WHITE, BG_BLACK,
-    BG_LIGHTRED, BG_LIGHTGREEN, BG_LIGHTBLUE, BG_LIGHTYELLOW,
-    BG_LIGHTMAGENTA, BG_LIGHTCYAN, BG_LIGHTGRAY, BG_DARKGRAY
+    BG_RED,
+    BG_GREEN,
+    BG_BLUE,
+    BG_YELLOW,
+    BG_MAGENTA,
+    BG_CYAN,
+    BG_WHITE,
+    BG_BLACK,
+    BG_LIGHTRED,
+    BG_LIGHTGREEN,
+    BG_LIGHTBLUE,
+    BG_LIGHTYELLOW,
+    BG_LIGHTMAGENTA,
+    BG_LIGHTCYAN,
+    BG_LIGHTGRAY,
+    BG_DARKGRAY,
 ]
 
-STYLES = [
-    BRIGHT, BOLD, DIM, UNDERLINE, BLINK, INVERT, SWAPCOLOR, HIDDEN, STRIKETHROUGH
-]
+STYLES = [BRIGHT, BOLD, DIM, UNDERLINE, BLINK, INVERT, SWAPCOLOR, HIDDEN, STRIKETHROUGH]
 
 ALL_COLORS = FOREGROUND_COLORS + BACKGROUND_COLORS + STYLES
 
 # Type alias for all valid color strings
 ColorType = Union[
     # Foreground colors
-    Literal["fg_red"], Literal["fg_green"], Literal["fg_blue"], Literal["fg_yellow"],
-    Literal["fg_magenta"], Literal["fg_cyan"], Literal["fg_white"], Literal["fg_black"],
-    Literal["fg_lightred"], Literal["fg_lightgreen"], Literal["fg_lightblue"], 
-    Literal["fg_lightyellow"], Literal["fg_lightmagenta"], Literal["fg_lightcyan"],
-    Literal["fg_lightgray"], Literal["fg_darkgray"],
+    Literal["fg_red"],
+    Literal["fg_green"],
+    Literal["fg_blue"],
+    Literal["fg_yellow"],
+    Literal["fg_magenta"],
+    Literal["fg_cyan"],
+    Literal["fg_white"],
+    Literal["fg_black"],
+    Literal["fg_lightred"],
+    Literal["fg_lightgreen"],
+    Literal["fg_lightblue"],
+    Literal["fg_lightyellow"],
+    Literal["fg_lightmagenta"],
+    Literal["fg_lightcyan"],
+    Literal["fg_lightgray"],
+    Literal["fg_darkgray"],
     # Background colors
-    Literal["bg_red"], Literal["bg_green"], Literal["bg_blue"], Literal["bg_yellow"],
-    Literal["bg_magenta"], Literal["bg_cyan"], Literal["bg_white"], Literal["bg_black"],
-    Literal["bg_lightred"], Literal["bg_lightgreen"], Literal["bg_lightblue"],
-    Literal["bg_lightyellow"], Literal["bg_lightmagenta"], Literal["bg_lightcyan"],
-    Literal["bg_lightgray"], Literal["bg_darkgray"],
+    Literal["bg_red"],
+    Literal["bg_green"],
+    Literal["bg_blue"],
+    Literal["bg_yellow"],
+    Literal["bg_magenta"],
+    Literal["bg_cyan"],
+    Literal["bg_white"],
+    Literal["bg_black"],
+    Literal["bg_lightred"],
+    Literal["bg_lightgreen"],
+    Literal["bg_lightblue"],
+    Literal["bg_lightyellow"],
+    Literal["bg_lightmagenta"],
+    Literal["bg_lightcyan"],
+    Literal["bg_lightgray"],
+    Literal["bg_darkgray"],
     # Text styles
-    Literal["bright"], Literal["dim"], Literal["underline"], Literal["blink"],
-    Literal["invert"], Literal["swapcolor"], Literal["hidden"], Literal["strikethrough"],
+    Literal["bright"],
+    Literal["dim"],
+    Literal["underline"],
+    Literal["blink"],
+    Literal["invert"],
+    Literal["swapcolor"],
+    Literal["hidden"],
+    Literal["strikethrough"],
     # Legacy compatibility
-    str
+    str,
 ]
 
 __all__ = [
-    # Foreground colors
-    "RED", "GREEN", "BLUE", "YELLOW", "MAGENTA", "CYAN", "WHITE", "BLACK",
-    "LIGHTRED", "LIGHTGREEN", "LIGHTBLUE", "LIGHTYELLOW",
-    "LIGHTMAGENTA", "LIGHTCYAN", "LIGHTGRAY", "DARKGRAY",
+    "ALL_COLORS",
+    "BACKGROUND_COLORS",
+    "BG_BLACK",
+    "BG_BLUE",
+    "BG_CYAN",
+    "BG_DARKGRAY",
+    "BG_GREEN",
+    "BG_LIGHTBLUE",
+    "BG_LIGHTCYAN",
+    "BG_LIGHTGRAY",
+    "BG_LIGHTGREEN",
+    "BG_LIGHTMAGENTA",
+    "BG_LIGHTRED",
+    "BG_LIGHTYELLOW",
+    "BG_MAGENTA",
     # Background colors
-    "BG_RED", "BG_GREEN", "BG_BLUE", "BG_YELLOW", "BG_MAGENTA", "BG_CYAN", 
-    "BG_WHITE", "BG_BLACK", "BG_LIGHTRED", "BG_LIGHTGREEN", "BG_LIGHTBLUE", 
-    "BG_LIGHTYELLOW", "BG_LIGHTMAGENTA", "BG_LIGHTCYAN", "BG_LIGHTGRAY", "BG_DARKGRAY",
+    "BG_RED",
+    "BG_WHITE",
+    "BG_YELLOW",
+    "BLACK",
+    "BLINK",
+    "BLUE",
+    "BOLD",
     # Text styles
-    "BRIGHT", "BOLD", "DIM", "UNDERLINE", "BLINK", "INVERT", "SWAPCOLOR", 
-    "HIDDEN", "STRIKETHROUGH",
+    "BRIGHT",
+    "CYAN",
+    "DARKGRAY",
+    "DIM",
     # Collections
-    "FOREGROUND_COLORS", "BACKGROUND_COLORS", "STYLES", "ALL_COLORS",
+    "FOREGROUND_COLORS",
+    "GREEN",
+    "HIDDEN",
+    "INVERT",
+    "LIGHTBLUE",
+    "LIGHTCYAN",
+    "LIGHTGRAY",
+    "LIGHTGREEN",
+    "LIGHTMAGENTA",
+    "LIGHTRED",
+    "LIGHTYELLOW",
+    "MAGENTA",
+    # Foreground colors
+    "RED",
+    "STRIKETHROUGH",
+    "STYLES",
+    "SWAPCOLOR",
+    "UNDERLINE",
+    "WHITE",
+    "YELLOW",
     # Type alias
     "ColorType",
 ]
