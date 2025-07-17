@@ -30,17 +30,17 @@ pip install tinty
 **Simple API, beautiful results:**
 
 ```python
-from tinty import colored, RED, GREEN, BLUE, YELLOW, BOLD
 print(colored("Success") | GREEN | BOLD)
 print(colored("Warning") | YELLOW)
 print(colored("Error") | RED | BOLD)
+print(colored("Info") | BLUE)
 ```
 ![Basic Colors Example](docs/images/basic-colors.png)
 
 **CLI pattern highlighting:**
 
 ```bash
-echo "hello world" | tinty '(ll).*(ld)' red,bg_blue blue,bg_red
+
 ```
 ![CLI Examples](docs/images/cli-examples.png)
 
@@ -48,7 +48,8 @@ echo "hello world" | tinty '(ll).*(ld)' red,bg_blue blue,bg_red
 
 ```python
 print(colored("SYSTEM ALERT") | RED | BOLD | BG_WHITE)
-print(str(colored("ERROR") | RED | BOLD) + " - Database failed")
+print(str(colored("DEBUG") | DIM) + " - Application started")
+print(str(colored("ERROR") | RED | BOLD) + " - Database connection failed")
 ```
 ![Complex Styling](docs/images/complex-styling.png)
 
@@ -56,7 +57,8 @@ print(str(colored("ERROR") | RED | BOLD) + " - Database failed")
 
 ```python
 text = "The quick brown fox jumps over the lazy dog"
-colored(text).highlight(r"(quick)|(fox)|(lazy)", ["red", "blue", "green"])
+highlighted = colored(text).highlight(r"(quick)|(fox)|(lazy)", ["red", "blue", "green"])
+print(highlighted)
 ```
 ![Pattern Highlighting](docs/images/pattern-highlighting.png)
 

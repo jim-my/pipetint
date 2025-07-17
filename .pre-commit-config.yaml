@@ -64,7 +64,8 @@ exclude: |
     \.venv/.*|
     build/.*|
     dist/.*|
-    src/tinty/_version\.py
+    src/tinty/_version\.py|
+    scripts/cli_examples.sh
   )$
 
 # Fail fast - stop on first failure
