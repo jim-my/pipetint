@@ -25,6 +25,41 @@ A Python library for terminal text colorization and highlighting, inspired by th
 pip install tinty
 ```
 
+## 🖼️ See It In Action
+
+**Simple API, beautiful results:**
+
+```python
+from tinty import colored, RED, GREEN, BLUE, YELLOW, BOLD
+print(colored("Success") | GREEN | BOLD)
+print(colored("Warning") | YELLOW)
+print(colored("Error") | RED | BOLD)
+```
+![Basic Colors Example](docs/images/basic-colors.png)
+
+**CLI pattern highlighting:**
+
+```bash
+echo "hello world" | tinty '(ll).*(ld)' red,bg_blue blue,bg_red
+```
+![CLI Examples](docs/images/cli-examples.png)
+
+**Complex styling made easy:**
+
+```python
+print(colored("SYSTEM ALERT") | RED | BOLD | BG_WHITE)
+print(str(colored("ERROR") | RED | BOLD) + " - Database failed")
+```
+![Complex Styling](docs/images/complex-styling.png)
+
+**Regex pattern highlighting:**
+
+```python
+text = "The quick brown fox jumps over the lazy dog"
+colored(text).highlight(r"(quick)|(fox)|(lazy)", ["red", "blue", "green"])
+```
+![Pattern Highlighting](docs/images/pattern-highlighting.png)
+
 ## 🎨 Quick Start
 
 ### Modern Enhanced API (Recommended)
@@ -187,6 +222,7 @@ tinty --list-colors
 # Case sensitive matching
 echo "Hello World" | tinty --case-sensitive 'Hello' green
 ```
+
 
 ## 🔄 Legacy API (Still Supported)
 

@@ -105,3 +105,48 @@ info:
 # Show available colors demo
 demo:
     python -c "from tinty import C, RED, GREEN, BLUE, BOLD; print(C('✅ Tinty works!') | GREEN | BOLD)"
+
+# Generate terminal screenshots for README
+screenshots:
+    @echo "📸 Generating terminal screenshots for README..."
+    @mkdir -p docs/images
+    @echo "Running basic colors example..."
+    python -c "from tinty import colored, C, RED, GREEN, BLUE, YELLOW, BOLD; print(colored('Success') | GREEN | BOLD); print(colored('Warning') | YELLOW); print(colored('Error') | RED | BOLD); print(colored('Info') | BLUE)"
+    @echo ""
+    @echo "Running CLI pattern highlighting examples..."
+    echo "hello world" | tinty 'l.*' yellow
+    echo "hello world" | tinty '(ll).*(ld)' red,bg_blue blue,bg_red
+    @echo ""
+    @echo "Running complex styling example..."
+    python -c "from tinty import colored, RED, BOLD, BG_WHITE, BLUE, YELLOW, DIM; print(colored('SYSTEM ALERT') | RED | BOLD | BG_WHITE); print(str(colored('DEBUG') | DIM) + ' - Application started'); print(str(colored('INFO') | BLUE) + ' - User logged in'); print(str(colored('WARNING') | YELLOW | BOLD) + ' - Memory usage high'); print(str(colored('ERROR') | RED | BOLD) + ' - Database connection failed')"
+    @echo ""
+    @echo "Running pattern highlighting example..."
+    python -c "from tinty import colored; text = 'The quick brown fox jumps over the lazy dog'; highlighted = colored(text).highlight(r'(quick)|(fox)|(lazy)', ['red', 'blue', 'green']); print(highlighted)"
+    @echo ""
+    @echo "💡 To capture these as images:"
+    @echo "1. Run: just screenshots > output.txt"
+    @echo "2. Use a terminal screenshot tool like 'termshot' or manually capture"
+    @echo "3. Save screenshots to docs/images/ folder"
+    @echo "4. Update README.md image URLs to point to your screenshots"
+
+# Generate screenshot images with termshot
+screenshots-capture: screenshots-create-scripts
+    @echo "📸 Capturing screenshots with termshot..."
+    @echo "Capturing basic colors example..."
+    termshot --filename docs/images/basic-colors.png --columns 80 python scripts/basic_colors.py
+    @echo "Capturing CLI pattern highlighting examples..."
+    termshot --filename docs/images/cli-examples.png --columns 80 scripts/cli_examples.sh
+    @echo "Capturing complex styling example..."
+    termshot --filename docs/images/complex-styling.png --columns 80 python scripts/complex_styling.py
+    @echo "Capturing pattern highlighting example..."
+    termshot --filename docs/images/pattern-highlighting.png --columns 80 python scripts/pattern_highlighting.py
+    @echo "✅ Screenshots saved to docs/images/"
+
+# Create script files for termshot
+screenshots-create-scripts:
+    @mkdir -p docs/images scripts
+    @echo 'from tinty import colored, C, RED, GREEN, BLUE, YELLOW, BOLD\nprint(colored("Success") | GREEN | BOLD)\nprint(colored("Warning") | YELLOW)\nprint(colored("Error") | RED | BOLD)\nprint(colored("Info") | BLUE)' > scripts/basic_colors.py
+    @echo '#!/bin/bash\necho "hello world" | tinty "l.*" yellow\necho "hello world" | tinty "(ll).*(ld)" red,bg_blue blue,bg_red' > scripts/cli_examples.sh
+    @echo 'from tinty import colored, RED, BOLD, BG_WHITE, BLUE, YELLOW, DIM\nprint(colored("SYSTEM ALERT") | RED | BOLD | BG_WHITE)\nprint(str(colored("DEBUG") | DIM) + " - Application started")\nprint(str(colored("INFO") | BLUE) + " - User logged in")\nprint(str(colored("WARNING") | YELLOW | BOLD) + " - Memory usage high")\nprint(str(colored("ERROR") | RED | BOLD) + " - Database connection failed")' > scripts/complex_styling.py
+    @echo 'from tinty import colored\ntext = "The quick brown fox jumps over the lazy dog"\nhighlighted = colored(text).highlight(r"(quick)|(fox)|(lazy)", ["red", "blue", "green"])\nprint(highlighted)' > scripts/pattern_highlighting.py
+    chmod +x scripts/cli_examples.sh

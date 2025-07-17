@@ -198,6 +198,11 @@ ignore = [
     "PLC0415", # Import at top level (allow in examples)
     "E501",    # Line too long (examples can be longer)
 ]
+"scripts/**/*.py" = [
+    "T201",    # Allow print statements in scripts
+    "PLC0415", # Import at top level (allow in scripts)
+    "E501",    # Line too long (scripts can be longer)
+]
 "src/tinty/cli.py" = [
     "T201",    # Allow print statements in CLI
     "PERF203", # try-except in loop (acceptable for CLI)
