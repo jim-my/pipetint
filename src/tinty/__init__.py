@@ -26,8 +26,13 @@ Legacy API (still supported):
 
 # Enhanced production-safe API (recommended)
 # Legacy API (backward compatibility)
+# Note: string_extensions module removed - use enhanced API or core classes directly
+from ._version import __version__
 from .color_codes import ColorCode, ColorManager, color_manager
 from .colors import *  # noqa: F403
+
+# Export enhanced API as primary interface
+from .colors import __all__ as _colors_all
 from .enhanced import (
     C,
     ColorContext,
@@ -37,13 +42,6 @@ from .enhanced import (
 )
 from .tinty import Colorize, ColorizedString, colorize
 
-# Note: string_extensions module removed - use enhanced API or core classes directly
-
-__version__ = "0.1.0"
-
-# Export enhanced API as primary interface
-from .colors import __all__ as _colors_all
-
 __all__ = [
     "C",
     "ColorCode",
@@ -52,6 +50,7 @@ __all__ = [
     "ColorString",
     "Colorize",
     "ColorizedString",
+    "__version__",
     "color_manager",
     "colored",
     "colorize",
