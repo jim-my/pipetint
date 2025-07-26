@@ -27,7 +27,9 @@ Legacy API (still supported):
 # Enhanced production-safe API (recommended)
 # Legacy API (backward compatibility)
 # Note: string_extensions module removed - use enhanced API or core classes directly
-from ._version import __version__
+from importlib.metadata import version
+
+__version__ = version("tinty")
 from .color_codes import ColorCode, ColorManager, color_manager
 from .colors import *  # noqa: F403
 
