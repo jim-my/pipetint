@@ -10,11 +10,14 @@ authors = [
     {name = "Jimmy"},
 ]
 readme = "README.md"
-license = "MIT"
+license = {text = "MIT"}
 requires-python = ">=3.9"
 classifiers = [
     "Development Status :: 4 - Beta",
+    "Environment :: Console",
     "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -23,6 +26,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Terminals",
     "Topic :: Text Processing",
+    "Topic :: Utilities",
 ]
 keywords = ["color", "terminal", "ansi", "highlighting", "text", "cli"]
 dependencies = []
@@ -51,16 +55,11 @@ tinty = "tinty.cli:main"
 [tool.setuptools]
 package-dir = {"" = "src"}
 
-[tool.setuptools.packages.find]
-where = ["src"]
-
 [tool.setuptools_scm]
-write_to = "src/tinty/_version.py"
 
-# Poetry configuration (alternative to setuptools)
 [tool.poetry]
 name = "tinty"
-version = "0.1.4"
+version = "0.0.0"  # managed by setuptools-scm
 description = "A Python library for terminal text colorization and highlighting"
 authors = ["Jimmy"]
 readme = "README.md"
@@ -72,6 +71,7 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
     "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
@@ -83,7 +83,14 @@ classifiers = [
     "Topic :: Text Processing",
     "Topic :: Utilities",
 ]
-packages = [{include = "tinty", from = "src"}]
+packages = [
+    {include = "tinty", from = "src"}
+]
+
+[tool.poetry-dynamic-versioning]
+enable = true
+vcs = "git"
+style = "semver"
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -100,6 +107,7 @@ mypy = "^1.0"
 pre-commit = "^3.0"
 twine = "^4.0"
 build = "^1.0"
+poetry-dynamic-versioning = "^1.0"
 
 [tool.poetry.scripts]
 tinty = "tinty.cli:main"
@@ -123,7 +131,6 @@ source = ["src"]
 omit = [
     "*/tests/*",
     "*/test_*.py",
-    "*/_version.py",
 ]
 
 [tool.coverage.report]
@@ -135,7 +142,6 @@ exclude_lines = [
     "if __name__ == .__main__.:",
     "if TYPE_CHECKING:",
 ]
-
 
 [tool.ruff]
 line-length = 88
@@ -204,7 +210,6 @@ ignore = [
     "T201",    # Allow print statements in CLI
     "PERF203", # try-except in loop (acceptable for CLI)
     "E501",    # Line too long (CLI can be longer)
-
 ]
 "src/tinty/color_codes.py" = [
     "PLC0415", # Import at top level (re import in function)
@@ -218,18 +223,12 @@ ignore = [
     "PERF401", # List comprehension suggestion (readability over perf)
     "E501",    # Line too long (complex type signatures)
 ]
-"src/tinty/_version.py" = [
-    "UP035",   # typing.Tuple is deprecated (generated file)
-    "UP006",   # Use tuple instead of Tuple (generated file)
-    "I001",    # Import block formatting (generated file)
-]
 
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
-exclude = ["src/tinty/_version.py"]
 
 [tool.bandit]
 exclude_dirs = ["tests"]

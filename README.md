@@ -281,6 +281,14 @@ See the `examples/` directory for more comprehensive examples:
 - `examples/quickstart.py` - Basic usage patterns
 - `examples/enhanced_demo.py` - Full enhanced API demonstration
 
+## Version Management
+
+This project uses automated versioning via git tags:
+
+- Versions are managed by `setuptools-scm` based on git tags
+- `poetry-dynamic-versioning` integrates this with Poetry builds
+- To release: `git tag v1.2.3 && git push --tags`
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request. Make sure to:
