@@ -1,143 +1,302 @@
 # Tinty
 
-Tinty is a tiny Python library for terminal text colorization and highlighting, inspired by the Ruby colorize gem. Now with a modern, production-safe API featuring Pathlib-inspired operator chaining!
+> **The only terminal colorizer with smart color nesting and pipeline composition.**
 
-![CI](https://github.com/jim-my/colorize/workflows/CI/badge.svg)
+[![CI](https://github.com/jim-my/colorize/workflows/CI/badge.svg)](https://github.com/jim-my/colorize/actions)
 [![codecov](https://codecov.io/gh/jim-my/colorize/branch/main/graph/badge.svg)](https://codecov.io/gh/jim-my/colorize)
 [![PyPI version](https://badge.fury.io/py/tinty.svg)](https://badge.fury.io/py/tinty)
 [![Python versions](https://img.shields.io/pypi/pyversions/tinty.svg)](https://pypi.org/project/tinty)
+[![Production Ready](https://img.shields.io/badge/status-production%20ready-brightgreen.svg)](https://github.com/jim-my/tinty)
 
-## ✨ Features
+Python library and CLI tool for terminal text colorization with **automatic priority-based color nesting**, **pipeline composition**, and **ANSI-aware pattern matching**. Zero dependencies, pure Python.
 
-- **🔒 Production Safe**: No monkey patching or global state pollution
-- **🎯 Multiple APIs**: Choose your preferred style - fluent, functional, or global
-- **🔗 Pathlib-inspired**: Elegant operator chaining with `|` and `>>` operators
-- **🌈 Comprehensive**: Support for all ANSI colors, backgrounds, and text styles
-- **🎨 Smart Color Nesting**: Automatic priority-based rendering without manual z-index
-- **🔍 ANSI-Aware Matching**: Patterns match original text, ignoring color codes
-- **🎯 Channel Isolation**: Foreground, background, and attributes work independently
-- **⚡ High Performance**: Efficient implementation with minimal overhead
-- **🧪 Well Tested**: Comprehensive test suite with 100+ tests
-- **📦 Zero Dependencies**: Pure Python implementation
-- **🖥️ Cross Platform**: Works on Linux, macOS, and Windows
-- **🛠️ CLI Tool**: Command-line interface for colorizing text
+---
+
+## 📖 Quick Navigation
+
+- [⚡ Quick Start](#-quick-start) - Get started in 30 seconds
+- [🎨 What Makes Tinty Unique](#-what-makes-tinty-unique) - Smart nesting, pipelines, channel isolation
+- [💡 Real-World Examples](#-real-world-examples) - Log highlighting, syntax highlighting
+- [📋 Full Documentation](#-full-documentation) - Complete API reference
+- [🚀 Installation](#-installation)
+
+---
+
+## ⚡ Quick Start
+
+```bash
+# Install
+pip install tinty
+
+# Smart color nesting - inner groups automatically win
+echo "hello world" | tinty '(h.(ll))' red,blue
+# Output: "he" is red, "ll" is blue (inner has higher priority)
+
+# Pipeline composition - colors preserved across stages
+echo "hello world" | tinty 'hello' red | tinty 'world' blue
+# Output: "hello" is red, "world" is blue
+
+# Python API with type-safe constants
+from tinty import colored, RED, BLUE, BOLD
+print(colored("Error") | RED | BOLD)
+```
+
+---
+
+## 🎨 What Makes Tinty Unique
+
+### 1. 🧠 **Smart Color Nesting** (No other tool has this!)
+
+Automatic priority-based rendering without manual z-index configuration:
+
+```bash
+# Nested regex groups - inner automatically wins
+echo "hello world" | tinty '(h.(ll))' red,blue
+# "he" is red, "ll" is blue (inner group has higher priority)
+```
+
+**Priority Rules:**
+1. **Pipeline stage** - Later commands override earlier ones
+2. **Nesting depth** - Inner regex groups override outer groups
+3. **Application order** - Later applications win within same depth
+
+### 2. 🔗 **Pipeline Composition**
+
+Colors preserved across pipeline stages with intelligent priority:
+
+```bash
+# Both colors preserved
+echo "hello world" | tinty 'hello' red | tinty 'world' blue
+
+# Later stage overrides overlaps
+echo "hello world" | tinty 'hello' red | tinty 'llo w' green
+# "he" is red, "llo w" is green (overrides)
+```
+
+### 3. 🎯 **Channel Isolation**
+
+Foreground, background, and attributes work independently:
+
+```bash
+# Background + foreground coexist in same text
+echo "hello world" | tinty '(h.(ll))' bg_red,blue
+# "he" = red background only
+# "ll" = red background AND blue foreground (both channels!)
+```
+
+### 4. 🔍 **ANSI-Aware Pattern Matching**
+
+Patterns match original text, ignoring existing ANSI codes:
+
+```python
+# Works on already-colored text!
+colored_text = ColorizedString("H\x1b[31mello\x1b[0m World")
+result = colored_text.highlight(r'Hello', ['green'])
+# Pattern matches "Hello" despite ANSI codes in the middle
+```
+
+---
+
+## 💡 Real-World Examples
+
+### Log File Highlighting
+
+```python
+from tinty import ColorizedString
+
+log = "ERROR: Connection failed at 10:30:45"
+result = (ColorizedString(log)
+    .highlight(r'ERROR', ['red', 'bold'])
+    .highlight(r'\d{2}:\d{2}:\d{2}', ['blue'])
+)
+print(result)
+# "ERROR" is red+bold, timestamp is blue
+```
+
+### Multi-Stage Pipeline Processing
+
+```bash
+# Stage 1: Highlight errors
+cat log.txt | tinty 'ERROR|CRITICAL' red > /tmp/colored.txt
+
+# Stage 2: Add timestamps (higher priority)
+cat /tmp/colored.txt | tinty '\d{2}:\d{2}:\d{2}' blue
+# Both colors preserved, timestamps override errors if overlapping
+```
+
+### Syntax Highlighting
+
+```python
+code = "def hello_world():"
+result = (ColorizedString(code)
+    .highlight(r'\b(def)\b', ['blue'])           # Keywords
+    .highlight(r'[a-z_]+\w*(?=\()', ['green'])   # Functions
+)
+print(result)
+```
+
+---
 
 ## 🚀 Installation
 
 ```bash
+# From PyPI
 pip install tinty
+
+# From source
+git clone https://github.com/jim-my/tinty.git
+cd tinty
+pip install -e .
 ```
 
-## 🖼️ See It In Action
+**Requirements:**
+- Python 3.9+
+- Zero dependencies (pure Python)
 
-**Simple API, beautiful results:**
+---
 
-```python
-print(colored("Success") | GREEN | BOLD)
-print(colored("Warning") | YELLOW)
-print(colored("Error") | RED | BOLD)
-print(colored("Info") | BLUE)
-```
-![Basic Colors Example](https://raw.githubusercontent.com/jim-my/tinty/main/docs/images/basic-colors.png)
+## ✨ Features
 
-**CLI pattern highlighting:**
+- **🧠 Smart Color Nesting**: Automatic priority-based rendering without manual z-index
+- **🔍 ANSI-Aware Matching**: Patterns match original text, ignoring color codes
+- **🎯 Channel Isolation**: Foreground, background, and attributes work independently
+- **🔗 Pipeline Composition**: Colors preserved across pipeline stages
+- **🔒 Production Safe**: No monkey patching or global state pollution
+- **🎭 Multiple APIs**: Choose your style - fluent, functional, or global
+- **⚡ High Performance**: Efficient implementation with minimal overhead
+- **🧪 Well Tested**: 143 tests with comprehensive coverage
+- **📦 Zero Dependencies**: Pure Python implementation
+- **🖥️ Cross Platform**: Works on Linux, macOS, and Windows
+
+---
+
+## 📋 Full Documentation
+
+### CLI Usage
+
+#### Basic Usage
 
 ```bash
-echo "hello world" | tinty "l.*" yellow
-echo "hello world" | tinty "(ll).*(ld)" red,bg_blue blue,bg_red
-```
-![CLI Examples](https://raw.githubusercontent.com/jim-my/tinty/main/docs/images/cli-examples.png)
+# Simple pattern matching
+echo "hello world" | tinty 'l' red
 
-**Complex styling made easy:**
+# Pattern groups
+echo "hello world" | tinty '(h.*o).*(w.*d)' red blue
+```
+
+#### Advanced: Nested Colors
+
+```bash
+# Nested regex groups - inner wins
+echo "hello world" | tinty '(h.(ll))' red,blue
+# Output: "he" is red, "ll" is blue
+
+# Channel isolation - foreground + background
+echo "hello world" | tinty '(h.(ll))' bg_red,blue
+# Output: "he" = red bg, "ll" = red bg + blue fg
+
+# Color name formats (both work)
+echo "hello" | tinty 'hello' bg_red    # Official format
+echo "hello" | tinty 'hello' red_bg    # Natural format (auto-normalized)
+```
+
+#### CLI Options
+
+```bash
+# List all available colors
+tinty --list-colors
+
+# Case sensitive matching
+echo "Hello World" | tinty --case-sensitive 'Hello' green
+
+# Verbose mode (debugging)
+echo "test" | tinty --verbose 'test' red
+
+# Clear all previous colors before applying new ones
+echo "hello world" | tinty 'hello' red | tinty --replace-all 'world' blue
+# Result: Only "world" is blue, "hello" has no color
+```
+
+### Python Library API
+
+#### Type-Safe Constants (Recommended)
 
 ```python
-print(colored("SYSTEM ALERT") | RED | BOLD | BG_WHITE)
-print(str(colored("DEBUG") | DIM) + " - Application started")
-print(str(colored("INFO") | BLUE) + " - User logged in")
-print(str(colored("WARNING") | YELLOW | BOLD) + " - Memory usage high")
-print(str(colored("ERROR") | RED | BOLD) + " - Database connection failed")
-```
-![Complex Styling](https://raw.githubusercontent.com/jim-my/tinty/main/docs/images/complex-styling.png)
+from tinty import colored, txt, RED, GREEN, BLUE, YELLOW, BOLD, BG_WHITE, UNDERLINE
 
-**Regex pattern highlighting:**
-
-```python
-text = "The quick brown fox jumps over the lazy dog"
-highlighted = colored(text).highlight(r"(quick)|(fox)|(lazy)", ["red", "blue", "green"])
-print(highlighted)
-```
-![Pattern Highlighting](https://raw.githubusercontent.com/jim-my/tinty/main/docs/images/pattern-highlighting.png)
-
-## 🎨 Quick Start
-
-### Modern Enhanced API (Recommended)
-
-```python
-from tinty import colored, C, txt, RED, GREEN, BLUE, YELLOW, BOLD, BG_WHITE, UNDERLINE
-
-# Type-safe constants with operator chaining (RECOMMENDED)
+# Type-safe constants with operator chaining
 print(colored("Success") | GREEN | BOLD)
 print(txt("Warning") | YELLOW)
 print(colored("Error") | RED | BOLD | BG_WHITE)
 print(txt("Info") >> BLUE >> UNDERLINE)
-
-# Global convenience object with constants
-print(C("✓ Tests passing") | GREEN)
-print(C("✗ Build failed") | RED)
-print(C("Processing...") | BLUE | BOLD)
-
-# Legacy method chaining (still works but uses internal string literals)
-print(colored("Success").green().bold())
-print(txt("Warning").yellow())
 ```
 
-### Real-World Examples
+#### Global Object with Constants
 
 ```python
-from tinty import (
-    colored, C, txt, ColorString,
-    RED, GREEN, BLUE, YELLOW, BOLD, DIM, BG_WHITE, BLINK
-)
+from tinty import C, RED, BOLD
 
-# Log levels with type-safe constants
-print(C("DEBUG") | DIM + " - Application started")
-print(colored("INFO") | BLUE + " - User logged in")
-print(txt("WARNING") | YELLOW | BOLD + " - Memory usage high")
-print(ColorString("ERROR") | RED | BOLD + " - Database connection failed")
-
-# CLI status indicators (direct color methods still work)
-print(f"{C.green('✓')} File saved successfully")
-print(f"{C.yellow('⚠')} Configuration outdated")
-print(f"{C.red('✗')} Permission denied")
-
-# Complex chaining with constants
-alert = (colored("SYSTEM ALERT")
-         | RED
-         | BOLD
-         | BG_WHITE
-         | BLINK)
-print(alert)
+C.red("hello")              # Direct color method
+C("hello") | RED | BOLD     # Factory with type-safe constants
+C("hello", "red")           # Direct colorization (legacy)
 ```
 
-### Pattern Highlighting
+#### Pattern Highlighting
 
 ```python
-from tinty import colored
+from tinty import ColorizedString
 
 # Highlight search terms
 text = "The quick brown fox jumps over the lazy dog"
-highlighted = colored(text).highlight(r"(quick)|(fox)|(lazy)", ["red", "blue", "green"])
+highlighted = ColorizedString(text).highlight(
+    r"(quick)|(fox)|(lazy)",
+    ["red", "blue", "green"]
+)
 print(highlighted)
 
 # Syntax highlighting
 code = "def hello_world():"
-result = colored(code).highlight(r"\b(def)\b", ["blue"])
+result = ColorizedString(code).highlight(r"\b(def)\b", ["blue"])
 print(result)
 ```
 
-## 🎨 Advanced: Color Nesting & Priority
+### Available Colors and Styles
 
-Tinty intelligently handles overlapping colors with automatic priority resolution:
+#### Foreground Colors
+`red`, `green`, `blue`, `yellow`, `magenta`, `cyan`, `white`, `black`, `lightred`, `lightgreen`, `lightblue`, `lightyellow`, `lightmagenta`, `lightcyan`, `lightgray`, `darkgray`
+
+#### Background Colors
+`bg_red`, `bg_green`, `bg_blue`, `bg_yellow`, `bg_magenta`, `bg_cyan`, `bg_white`, `bg_black`, `bg_lightred`, `bg_lightgreen`, `bg_lightblue`, `bg_lightyellow`, `bg_lightmagenta`, `bg_lightcyan`, `bg_lightgray`, `bg_darkgray`
+
+#### Text Styles
+`bright`/`bold`, `dim`, `underline`, `blink`, `invert`/`swapcolor`, `hidden`, `strikethrough`
+
+### Type-Safe Color Constants
+
+Use constants instead of error-prone string literals:
+
+```python
+from tinty import colored, RED, GREEN, BLUE, YELLOW, BOLD, BG_WHITE
+
+# ✅ Type-safe with IDE autocompletion and error checking
+error_msg = colored("CRITICAL") | RED | BOLD | BG_WHITE
+success_msg = colored("SUCCESS") | GREEN | BOLD
+warning_msg = colored("WARNING") | YELLOW
+
+# ❌ Error-prone string literals
+error_msg = colored("CRITICAL") | "red" | "typo"  # Runtime error!
+```
+
+**Benefits:**
+- 🔍 **IDE Autocompletion**: Get suggestions for valid colors
+- 🛡️ **Type Checking**: Catch typos at development time
+- 📝 **Self-Documenting**: Clear, readable code
+- 🔄 **Refactoring Safe**: Rename constants across codebase
+- ⚡ **No Runtime Errors**: Invalid colors caught early
+
+---
+
+## 🎨 Advanced: Color Nesting & Priority
 
 ### Nested Regex Groups
 
@@ -204,214 +363,88 @@ text.highlight(r'hello', ['bg_red'])    # Official format
 text.highlight(r'hello', ['red_bg'])    # Natural format (auto-normalized)
 ```
 
-### CLI Examples with Nesting
+---
+
+## 🧪 Development
+
+### Running Tests
 
 ```bash
-# Nested groups - inner blue wins over outer red
-echo "hello world" | tinty '(h.(ll))' red,blue
+# Run all tests
+pytest
 
-# Background + foreground coexist (different channels)
-echo "hello world" | tinty '(h.(ll))' bg_red,blue
-# Result: "he" = red background
-#         "ll" = red background + blue foreground
+# Run with coverage
+pytest --cov=tinty
 
-# Pipeline - later commands have higher priority
-echo "hello world" | tinty 'hello' red | tinty 'world' blue
-# Result: "hello" is red, "world" is blue
-
-# Pipeline with --replace-all to clear previous colors
-echo "hello world" | tinty 'hello' red | tinty --replace-all 'world' blue
-# Result: Only "world" is blue (red cleared)
-
-# Both color formats work
-echo "hello" | tinty 'hello' bg_red     # Official
-echo "hello" | tinty 'hello' red_bg     # Natural (auto-normalized)
+# Run specific test file
+pytest tests/test_nesting.py
 ```
 
-### Advanced Pattern Control
-
-Control priority through regex structure:
+### Code Quality
 
 ```bash
-# Want inner group to have higher priority?
-# Put it deeper in the nesting:
-echo "hello" | tinty '(he(ll)o)' red,blue
-# Result: "he" and "o" are red, "ll" is blue (deeper nesting)
+# Format and lint
+ruff format --preview .
+ruff check --preview .
 
-# Want same priority? Use sibling groups:
-echo "hello" | tinty '(he)(ll)' red,blue
-# Result: Both at same depth, order determines priority
+# Type checking
+mypy src/
+
+# Run pre-commit hooks
+pre-commit run --all-files
 ```
 
-### Real-World Use Cases
+---
 
-#### Log File Highlighting
+## 📖 Examples
 
-```python
-from tinty import ColorizedString
+See the `examples/` directory for more comprehensive examples:
 
-log = "ERROR: Connection failed at 10:30:45"
-result = (ColorizedString(log)
-    .highlight(r'ERROR', ['red', 'bold'])      # Priority 1
-    .highlight(r'\d{2}:\d{2}:\d{2}', ['blue']) # Priority 2
-)
-print(result)
-# "ERROR" is red+bold, timestamp is blue
-```
+- `examples/quickstart.py` - Basic usage patterns
+- `examples/enhanced_demo.py` - Full enhanced API demonstration
+- `examples/nesting_demo.py` - Color nesting and priority examples
 
-#### Syntax Highlighting with Context
+---
 
-```python
-code = "def hello_world():"
-result = (ColorizedString(code)
-    .highlight(r'\b(def)\b', ['blue'])           # Keywords
-    .highlight(r'[a-z_]+\w*(?=\()', ['green'])   # Function names
-)
-print(result)
-# Keywords and functions properly colored even when overlapping
-```
+## 🤝 Contributing
 
-#### Multi-Stage Processing
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-```bash
-# Stage 1: Highlight errors in red
-cat log.txt | tinty 'ERROR|CRITICAL' red > /tmp/colored.txt
+**Quick Start:**
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes and add tests
+4. Run tests and pre-commit hooks: `pytest && pre-commit run --all-files`
+5. Commit your changes: `git commit -m "feat: add amazing feature"`
+6. Push and create a Pull Request
 
-# Stage 2: Add blue highlighting for timestamps (higher priority)
-cat /tmp/colored.txt | tinty '\d{2}:\d{2}:\d{2}' blue
+---
 
-# Result: Both colors preserved, timestamps override errors if overlapping
-```
+## 🗺️ Roadmap
 
-## 📋 Available Colors and Styles
+See [ROADMAP.md](ROADMAP.md) for planned features and future direction.
 
-### Foreground Colors
-`red`, `green`, `blue`, `yellow`, `magenta`, `cyan`, `white`, `black`, `lightred`, `lightgreen`, `lightblue`, `lightyellow`, `lightmagenta`, `lightcyan`, `lightgray`, `darkgray`
+**Upcoming features:**
+- Configuration file support (.tintyrc.yaml)
+- Built-in color themes (log-levels, git-diff, python)
+- TrueColor (24-bit RGB) support
+- Pygments integration for syntax highlighting
 
-### Background Colors
-`bg_red`, `bg_green`, `bg_blue`, `bg_yellow`, `bg_magenta`, `bg_cyan`, `bg_white`, `bg_black`, `bg_lightred`, `bg_lightgreen`, `bg_lightblue`, `bg_lightyellow`, `bg_lightmagenta`, `bg_lightcyan`, `bg_lightgray`, `bg_darkgray`
+---
 
-### Text Styles
-`bright`/`bold`, `dim`, `underline`, `blink`, `invert`/`swapcolor`, `hidden`, `strikethrough`
+## 📄 License
 
-## 🔒 Type-Safe Color Constants (New!)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-Use constants instead of error-prone string literals:
+---
 
-```python
-from tinty import colored, RED, GREEN, BLUE, YELLOW, BOLD, BG_WHITE
+## 🙏 Acknowledgments
 
-# ✅ Type-safe with IDE autocompletion and error checking
-error_msg = colored("CRITICAL") | RED | BOLD | BG_WHITE
-success_msg = colored("SUCCESS") | GREEN | BOLD
-warning_msg = colored("WARNING") | YELLOW
+- Inspired by the Ruby [colorize](https://github.com/fazibear/colorize) gem
+- Built with modern Python best practices
+- Designed for production safety and developer experience
 
-# ❌ Error-prone string literals
-error_msg = colored("CRITICAL") | "red" | "typo"  # Runtime error!
-```
-
-**Benefits:**
-- 🔍 **IDE Autocompletion**: Get suggestions for valid colors
-- 🛡️ **Type Checking**: Catch typos at development time
-- 📝 **Self-Documenting**: Clear, readable code
-- 🔄 **Refactoring Safe**: Rename constants across codebase
-- ⚡ **No Runtime Errors**: Invalid colors caught early
-
-**Available Constants:**
-- **Colors**: `RED`, `GREEN`, `BLUE`, `YELLOW`, `MAGENTA`, `CYAN`, `WHITE`, `BLACK`
-- **Light Colors**: `LIGHTRED`, `LIGHTGREEN`, `LIGHTBLUE`, etc.
-- **Backgrounds**: `BG_RED`, `BG_GREEN`, `BG_BLUE`, etc.
-- **Styles**: `BOLD`, `BRIGHT`, `DIM`, `UNDERLINE`, `BLINK`, `INVERT`
-
-## 🎭 API Styles
-
-Choose the style that fits your needs:
-
-### 1. Type-Safe Constants (Recommended)
-```python
-from tinty import colored, txt, RED, BLUE, BOLD, UNDERLINE
-
-colored("hello") | RED | BOLD
-txt("world") | BLUE | UNDERLINE
-```
-
-### 2. Global Object with Constants
-```python
-from tinty import C, RED, BOLD
-
-C.red("hello")              # Direct color method
-C("hello") | RED | BOLD     # Factory with type-safe constants
-C("hello", "red")           # Direct colorization (legacy)
-```
-
-### 3. Enhanced ColorString with Constants
-```python
-from tinty import ColorString, RED, BOLD, BG_YELLOW
-
-ColorString("hello") | RED | BOLD | BG_YELLOW
-```
-
-### 4. Legacy Method Chaining (Still Supported)
-```python
-from tinty import colored, txt
-
-# Method chaining (uses internal string literals)
-colored("hello").red().bold()
-txt("world").blue().underline()
-
-# Mixed with operators (not recommended - inconsistent)
-colored("Mixed").red() | "bright"
-```
-
-## 🛠️ Command Line Interface
-
-### Basic Usage
-
-```bash
-# Simple pattern matching
-echo "hello world" | tinty 'l' red
-
-# Pattern groups
-echo "hello world" | tinty '(h.*o).*(w.*d)' red blue
-```
-
-### Advanced: Nested Colors
-
-```bash
-# Nested regex groups - inner wins
-echo "hello world" | tinty '(h.(ll))' red,blue
-# Output: "he" is red, "ll" is blue (inner group has higher priority)
-
-# Channel isolation - foreground + background
-echo "hello world" | tinty '(h.(ll))' bg_red,blue
-# Output: "he" = red bg, "ll" = red bg + blue fg
-
-# Color name formats (both work)
-echo "hello" | tinty 'hello' bg_red    # Official format
-echo "hello" | tinty 'hello' red_bg    # Natural format (auto-normalized)
-
-# Space or comma-separated colors
-echo "test" | tinty '(t)(e)' red,blue   # Comma-separated
-echo "test" | tinty '(t)(e)' red blue   # Space-separated
-```
-
-### Options
-
-```bash
-# List all available colors
-tinty --list-colors
-
-# Case sensitive matching
-echo "Hello World" | tinty --case-sensitive 'Hello' green
-
-# Verbose mode (debugging)
-echo "test" | tinty --verbose 'test' red
-
-# Clear all previous colors before applying new ones
-echo "hello world" | tinty 'hello' red | tinty --replace-all 'world' blue
-# Result: Only "world" is blue, "hello" has no color
-```
-
+---
 
 ## 🔄 Legacy API (Still Supported)
 
@@ -429,44 +462,9 @@ cs = ColorizedString("hello")
 print(cs.colorize("blue"))
 ```
 
-## 🧪 Development
+---
 
-### Running Tests
-
-```bash
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=tinty
-
-# Run specific test file
-pytest tests/test_enhanced.py
-```
-
-### Code Quality
-
-```bash
-# Format and lint
-ruff format --preview .
-ruff check --preview .
-
-# Type checking
-mypy src/
-
-# Run pre-commit hooks
-pre-commit run --all-files
-```
-
-## 📖 Examples
-
-See the `examples/` directory for more comprehensive examples:
-
-- `examples/quickstart.py` - Basic usage patterns
-- `examples/enhanced_demo.py` - Full enhanced API demonstration
-- `examples/nesting_demo.py` - Color nesting and priority examples
-
-## Version Management
+## 📊 Version Management
 
 This project uses automated versioning via git tags:
 
@@ -474,20 +472,6 @@ This project uses automated versioning via git tags:
 - `poetry-dynamic-versioning` integrates this with Poetry builds
 - To release: `git tag v1.2.3 && git push --tags`
 
-## 🤝 Contributing
+---
 
-Contributions are welcome! Please feel free to submit a Pull Request. Make sure to:
-
-1. Run the pre-commit hooks: `pre-commit run --all-files`
-2. Add tests for new features
-3. Update documentation as needed
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Inspired by the Ruby [colorize](https://github.com/fazibear/colorize) gem
-- Built with modern Python best practices
-- Designed for production safety and developer experience
+**Made with ❤️ by the Tinty community**
