@@ -287,6 +287,45 @@ class TestColorizedString:
         assert "\x1b[38;5;123m" in result_str  # Original 256-color preserved
         assert "\x1b[44m" in result_str  # New background color applied
 
+    def test_extended_colors_with_leading_attributes(self):
+        """Extended colors with leading attributes (e.g., reset/bold) are preserved."""
+        text = "\x1b[0;38;5;123mHello\x1b[0m"
+        cs = ColorizedString(text)
+        assert "\x1b[38;5;123m" in str(cs)
+
+        text_bg = "\x1b[1;48;5;200mHello\x1b[0m"
+        cs_bg = ColorizedString(text_bg)
+        assert "\x1b[48;5;200m" in str(cs_bg)
+
+        text_true = "\x1b[0;38;2;255;100;50mHello\x1b[0m"
+        cs_true = ColorizedString(text_true)
+        assert "\x1b[38;2;255;100;50m" in str(cs_true)
+
+    def test_combined_extended_foreground_background_preserved(self):
+        """Combined fg+bg extended sequences should preserve both channels."""
+        text = "\x1b[38;5;123;48;5;231mHello\x1b[0m"
+        cs = ColorizedString(text)
+        rendered = str(cs)
+        assert "\x1b[38;5;123m" in rendered
+        assert "\x1b[48;5;231m" in rendered
+
+    def test_highlight_preserves_other_channel_for_extended_colors(self):
+        """Changing one channel should not drop the other extended channel."""
+        text = "\x1b[38;5;123;48;5;231mHello\x1b[0m"
+        cs = ColorizedString(text)
+
+        # Change foreground only
+        fg_result = cs.highlight(r"Hello", ["red"])
+        fg_str = str(fg_result)
+        assert "\x1b[31m" in fg_str
+        assert "\x1b[48;5;231m" in fg_str  # Background preserved
+
+        # Change background only
+        bg_result = cs.highlight(r"Hello", ["bg_blue"])
+        bg_str = str(bg_result)
+        assert "\x1b[44m" in bg_str
+        assert "\x1b[38;5;123m" in bg_str  # Foreground preserved
+
 
 class TestHighlightingEdgeCases:
     """Test edge cases for highlighting functionality."""

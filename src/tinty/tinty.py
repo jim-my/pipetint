@@ -17,8 +17,8 @@ ANSI_FG_256_CODE = 38
 ANSI_BG_256_CODE = 48
 ANSI_256_COLOR_TYPE = 5
 ANSI_TRUE_COLOR_TYPE = 2
-ANSI_256_COLOR_MIN_PARAMS = 3
-ANSI_TRUE_COLOR_MIN_PARAMS = 5
+ANSI_256_COLOR_LEN = 3  # 38;5;N
+ANSI_TRUE_COLOR_LEN = 5  # 38;2;R;G;B
 
 
 @dataclass
@@ -149,31 +149,42 @@ class ColorizedString(str):
         self._colors_at: dict[int, list[str]] = {}
 
     @staticmethod
-    def _detect_extended_color(
-        codes: list[int], code_str: str
-    ) -> Optional[tuple[str, str]]:
-        """Detect extended color sequences (256-color and truecolor).
+    @staticmethod
+    def _extract_extended_color(
+        codes: list[int], index: int
+    ) -> tuple[Optional[tuple[str, str]], int]:
+        """Extract a 256-color or truecolor code starting at index."""
+        if index >= len(codes):
+            return None, 1
 
-        Returns:
-            (color_name, channel) tuple if extended color detected, None otherwise
-        """
-        if len(codes) < ANSI_256_COLOR_MIN_PARAMS:
-            return None
+        code = codes[index]
+        if code not in {ANSI_FG_256_CODE, ANSI_BG_256_CODE}:
+            return None, 1
 
-        # 256-color format: 38;5;N (foreground) or 48;5;N (background)
-        if codes[0] == ANSI_FG_256_CODE and codes[1] == ANSI_256_COLOR_TYPE:
-            return (f"__raw_ansi_fg__:{code_str}", "fg")
-        if codes[0] == ANSI_BG_256_CODE and codes[1] == ANSI_256_COLOR_TYPE:
-            return (f"__raw_ansi_bg__:{code_str}", "bg")
+        result: Optional[tuple[str, str]] = None
+        consumed = 1
+        channel = "fg" if code == ANSI_FG_256_CODE else "bg"
+        prefix = f"__raw_ansi_{channel}__:"
 
-        # Truecolor format: 38;2;R;G;B (foreground) or 48;2;R;G;B (background)
-        if len(codes) >= ANSI_TRUE_COLOR_MIN_PARAMS:
-            if codes[0] == ANSI_FG_256_CODE and codes[1] == ANSI_TRUE_COLOR_TYPE:
-                return (f"__raw_ansi_fg__:{code_str}", "fg")
-            if codes[0] == ANSI_BG_256_CODE and codes[1] == ANSI_TRUE_COLOR_TYPE:
-                return (f"__raw_ansi_bg__:{code_str}", "bg")
+        if index + 1 < len(codes):
+            color_type = codes[index + 1]
+            if color_type == ANSI_256_COLOR_TYPE and index + ANSI_256_COLOR_LEN <= len(
+                codes
+            ):
+                value = codes[index + 2]
+                raw = f"{code};{color_type};{value}"
+                result = (f"{prefix}{raw}", channel)
+                consumed = ANSI_256_COLOR_LEN
+            elif (
+                color_type == ANSI_TRUE_COLOR_TYPE
+                and index + ANSI_TRUE_COLOR_LEN <= len(codes)
+            ):
+                r, g, b = codes[index + 2 : index + 5]
+                raw = f"{code};{color_type};{r};{g};{b}"
+                result = (f"{prefix}{raw}", channel)
+                consumed = ANSI_TRUE_COLOR_LEN
 
-        return None
+        return result, consumed
 
     @staticmethod
     def _close_and_start_color(
@@ -224,7 +235,7 @@ class ColorizedString(str):
 
         # Split text into segments (text and ANSI codes)
         last_end = 0
-        for match in ansi_pattern.finditer(text):  # noqa: PLR1702
+        for match in ansi_pattern.finditer(text):
             # Add text before this ANSI code
             segment = text[last_end : match.start()]
             if segment:
@@ -235,37 +246,49 @@ class ColorizedString(str):
             code_str = match.group(1)
             codes = [int(c) for c in code_str.split(";") if c]
 
-            # Check for extended color sequences (256-color and truecolor)
-            extended_color = ColorizedString._detect_extended_color(codes, code_str)
-            if extended_color:
-                color_name, channel = extended_color
-                ColorizedString._close_and_start_color(
-                    channel, color_name, pos, active_colors, ranges
-                )
-            else:
-                # Handle standard color codes
-                for code in codes:
-                    if code == 0:
-                        # Reset - close all active colors
-                        for color_name, start_pos in active_colors.values():
-                            if start_pos < pos:
-                                ranges.append(
-                                    ColorRange(
-                                        start=start_pos,
-                                        end=pos,
-                                        color=color_name,
-                                        priority=0,  # Parsed from input, pipeline_stage=0
-                                        pipeline_stage=0,
-                                    )
+            # Handle standard and extended codes in sequence order
+            index = 0
+            while index < len(codes):
+                code = codes[index]
+
+                # Reset - close all active colors
+                if code == 0:
+                    for color_name, start_pos in active_colors.values():
+                        if start_pos < pos:
+                            ranges.append(
+                                ColorRange(
+                                    start=start_pos,
+                                    end=pos,
+                                    color=color_name,
+                                    priority=0,  # Parsed from input, pipeline_stage=0
+                                    pipeline_stage=0,
                                 )
-                        active_colors = {}
-                    elif code in code_to_color:
-                        # Start a new color
-                        color_name = code_to_color[code]
-                        channel = self._get_color_channel(color_name)
-                        ColorizedString._close_and_start_color(
-                            channel, color_name, pos, active_colors, ranges
-                        )
+                            )
+                    active_colors = {}
+                    index += 1
+                    continue
+
+                # Extended color sequences (256-color / truecolor)
+                extended, consumed = ColorizedString._extract_extended_color(
+                    codes, index
+                )
+                if extended:
+                    color_name, channel = extended
+                    ColorizedString._close_and_start_color(
+                        channel, color_name, pos, active_colors, ranges
+                    )
+                    index += consumed
+                    continue
+
+                # Standard color codes
+                if code in code_to_color:
+                    color_name = code_to_color[code]
+                    channel = self._get_color_channel(color_name)
+                    ColorizedString._close_and_start_color(
+                        channel, color_name, pos, active_colors, ranges
+                    )
+
+                index += 1
 
             last_end = match.end()
 
