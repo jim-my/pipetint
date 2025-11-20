@@ -229,6 +229,64 @@ class TestColorizedString:
         with pytest.raises(AttributeError):
             _ = cs.invalid_color
 
+    def test_preserve_256_color_foreground(self):
+        """Test that 256-color foreground codes are preserved."""
+        # ANSI 256-color: ESC[38;5;NmESC[0m where N is 0-255
+        text_with_256color = "\x1b[38;5;123mHello\x1b[0m World"
+        cs = ColorizedString(text_with_256color)
+
+        # The 256-color code should be preserved
+        result = str(cs)
+        assert "Hello" in result
+        assert "World" in result
+        # Should preserve the 256-color sequence, not misinterpret it
+        assert "\x1b[5m" not in result  # Should NOT become 'blink'
+        assert "\x1b[38;5;123m" in result  # Should preserve 256-color code
+
+    def test_preserve_256_color_background(self):
+        """Test that 256-color background codes are preserved."""
+        # ANSI 256-color background: ESC[48;5;Nm
+        text_with_256color = "\x1b[48;5;200mHello\x1b[0m World"
+        cs = ColorizedString(text_with_256color)
+
+        result = str(cs)
+        assert "Hello" in result
+        assert "\x1b[48;5;200m" in result  # Should preserve 256-color background
+
+    def test_preserve_truecolor_foreground(self):
+        """Test that 24-bit truecolor foreground codes are preserved."""
+        # ANSI truecolor: ESC[38;2;R;G;Bm
+        text_with_truecolor = "\x1b[38;2;255;100;50mHello\x1b[0m World"
+        cs = ColorizedString(text_with_truecolor)
+
+        result = str(cs)
+        assert "Hello" in result
+        assert "\x1b[38;2;255;100;50m" in result  # Should preserve truecolor
+
+    def test_preserve_truecolor_background(self):
+        """Test that 24-bit truecolor background codes are preserved."""
+        # ANSI truecolor background: ESC[48;2;R;G;Bm
+        text_with_truecolor = "\x1b[48;2;100;150;200mHello\x1b[0m World"
+        cs = ColorizedString(text_with_truecolor)
+
+        result = str(cs)
+        assert "Hello" in result
+        assert "\x1b[48;2;100;150;200m" in result  # Should preserve truecolor
+
+    def test_pipeline_composition_with_256_color(self):
+        """Test that 256-color codes survive pipeline composition."""
+        # Simulate upstream coloring with 256-color, then downstream highlighting
+        upstream_colored = "\x1b[38;5;123mHello World\x1b[0m"
+        cs = ColorizedString(upstream_colored)
+
+        # Add additional highlighting
+        result = cs.highlight(r"World", ["bg_blue"])
+        result_str = str(result)
+
+        # Both the original 256-color AND the new bg_blue should be present
+        assert "\x1b[38;5;123m" in result_str  # Original 256-color preserved
+        assert "\x1b[44m" in result_str  # New background color applied
+
 
 class TestHighlightingEdgeCases:
     """Test edge cases for highlighting functionality."""
