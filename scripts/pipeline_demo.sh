@@ -23,3 +23,10 @@ echo "Command: echo 'hello world' | tinty 'hello' red | tinty '.*' blue"
 echo "Result:  "
 echo "hello world" | tinty 'hello' red | tinty '.*' blue
 echo "         Everything is blue (latest wins)"
+echo ""
+
+echo "Example 4: Using --replace-all to clear previous colors"
+echo "Command: echo 'hello world' | tinty 'hello' red | tinty --replace-all 'world' blue"
+echo "Result:  "
+echo "hello world" | tinty 'hello' red | tinty --replace-all 'world' blue
+echo "         Only 'world' is blue (red was cleared)"

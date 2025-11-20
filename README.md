@@ -219,6 +219,10 @@ echo "hello world" | tinty '(h.(ll))' bg_red,blue
 echo "hello world" | tinty 'hello' red | tinty 'world' blue
 # Result: "hello" is red, "world" is blue
 
+# Pipeline with --replace-all to clear previous colors
+echo "hello world" | tinty 'hello' red | tinty --replace-all 'world' blue
+# Result: Only "world" is blue (red cleared)
+
 # Both color formats work
 echo "hello" | tinty 'hello' bg_red     # Official
 echo "hello" | tinty 'hello' red_bg     # Natural (auto-normalized)
@@ -402,6 +406,10 @@ echo "Hello World" | tinty --case-sensitive 'Hello' green
 
 # Verbose mode (debugging)
 echo "test" | tinty --verbose 'test' red
+
+# Clear all previous colors before applying new ones
+echo "hello world" | tinty 'hello' red | tinty --replace-all 'world' blue
+# Result: Only "world" is blue, "hello" has no color
 ```
 
 

@@ -210,6 +210,10 @@ echo "Hello World" | tinty --case-sensitive 'Hello' green
 
 # Verbose mode (debugging)
 echo "test" | tinty --verbose 'test' red
+
+# Clear all previous colors before applying new ones
+echo "hello world" | tinty 'hello' red | tinty --replace-all 'world' blue
+# Result: Only "world" is blue, "hello" has no color
 ```
 ```
 
