@@ -110,10 +110,17 @@ def main():
     except re.error:
         sys.exit(1)
 
+    # Parse colors - split comma-separated color lists
+    # e.g., ['red,blue'] -> ['red', 'blue']
+    # or ['red', 'blue'] -> ['red', 'blue'] (already split)
+    colors = []
+    for color_arg in args.colors:
+        colors.extend(color_arg.split(","))
+
     # Process input
     try:
         for line in sys.stdin:
-            result = process_line(line, pattern, args.colors, args.verbose)
+            result = process_line(line, pattern, colors, args.verbose)
             print(result)
             sys.stdout.flush()
     except KeyboardInterrupt:

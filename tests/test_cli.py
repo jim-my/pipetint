@@ -331,3 +331,21 @@ class TestCLIIntegration:
                     # Should output original text without colors
                     assert output.strip() == "hello world"
                     assert "\033[" not in output
+
+    def test_cli_piping_with_no_color(self):
+        """Test piping a colored string to a no_color command."""
+        from tinty import ColorizedString
+
+        # Simulate the first command's output
+        colored_input = "he\033[31m\033[44mllo wor\033[0m\033[34m\033[41mld\033[0m\n"
+
+        with patch("sys.argv", ["tinty", ".*", "no_color"]):
+            with patch("sys.stdin", io.StringIO(colored_input)):
+                with patch("sys.stdout", io.StringIO()) as mock_stdout:
+                    main()
+
+                    output = mock_stdout.getvalue()
+
+                    # Should output original text without colors
+                    cleaned = ColorizedString(output).remove_color().strip()
+                    assert cleaned == "hello world"
