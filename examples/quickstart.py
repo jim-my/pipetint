@@ -13,7 +13,7 @@ import sys
 sys.path.insert(0, str(pathlib.Path(__file__).parent / ".." / "src"))
 
 # Import the enhanced, production-safe API
-from tinty import C, ColorString, colored, txt
+from pipetint import C, ColorString, colored, txt
 
 
 def main():

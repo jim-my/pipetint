@@ -2,7 +2,7 @@
 Tests for color codes module.
 """
 
-from tinty.color_codes import ColorCode, ColorManager, color_manager
+from pipetint.color_codes import ColorCode, ColorManager, color_manager
 
 
 class TestColorCode:

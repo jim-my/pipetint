@@ -4,8 +4,8 @@ Tests for colorize module.
 
 import pytest
 
-from tinty.color_codes import ColorCode
-from tinty.tinty import Colorize, ColorizedString
+from pipetint.color_codes import ColorCode
+from pipetint.tinty import Colorize, ColorizedString
 
 
 class TestColorize:
@@ -568,7 +568,7 @@ class TestPriorityOverflow:
         a tuple (pipeline_stage, nesting_depth, application_order) to prevent
         overflow where application_order spills into nesting_depth space.
         """
-        from tinty.tinty import ColorRange
+        from pipetint.tinty import ColorRange
 
         # Create two ranges that demonstrate tuple priority:
         # Range 1: stage=0, depth=1, order=1000

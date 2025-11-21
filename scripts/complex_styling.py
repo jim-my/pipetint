@@ -1,4 +1,4 @@
-from tinty import BG_WHITE, BLUE, BOLD, DIM, RED, YELLOW, colored
+from pipetint import BG_WHITE, BLUE, BOLD, DIM, RED, YELLOW, colored
 
 print(colored("SYSTEM ALERT") | RED | BOLD | BG_WHITE)
 print(str(colored("DEBUG") | DIM) + " - Application started")

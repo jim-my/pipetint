@@ -3,7 +3,7 @@
 Demo script showing tinty library functionality.
 """
 
-from tinty import (
+from pipetint import (
     BLUE,
     BRIGHT,
     CYAN,
@@ -123,7 +123,7 @@ def demo_modern_api():
     """Demonstrate modern production-safe API."""
     print("=== Modern Production-Safe API ===")
 
-    from tinty import BLUE, RED, C, colored, txt
+    from pipetint import BLUE, RED, C, colored, txt
 
     # Type-safe constants (recommended)
     print(colored("Red text") | RED)

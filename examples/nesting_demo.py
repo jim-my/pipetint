@@ -9,7 +9,7 @@ This demonstrates:
 4. Proper color nesting without manual z-index
 """
 
-from tinty import ColorizedString
+from pipetint import ColorizedString
 
 print("=" * 60)
 print("TINTY COLOR NESTING DEMO")

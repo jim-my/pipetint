@@ -2,7 +2,7 @@
 Tests for color nesting and priority behavior.
 """
 
-from tinty import ColorizedString
+from pipetint import ColorizedString
 
 
 class TestColorNesting:

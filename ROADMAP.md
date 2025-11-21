@@ -33,8 +33,8 @@ Tinty aims to be the **most powerful and user-friendly terminal colorizer** with
 **Goal**: Allow users to save common patterns and reuse them without retyping.
 
 **Features**:
-- YAML configuration file (.tintyrc.yaml)
-- Standard locations: `~/.tintyrc`, `./.tintyrc`, `$XDG_CONFIG_HOME/tinty/config.yaml`
+- YAML configuration file (.pipetintrc.yaml)
+- Standard locations: `~/.pipetintrc`, `./.pipetintrc`, `$XDG_CONFIG_HOME/pipetint/config.yaml`
 - Named rule sets for different use cases
 - Environment-specific overrides
 
@@ -57,10 +57,10 @@ rules:
 **CLI Usage**:
 ```bash
 # Use all rules from config
-cat log.txt | tinty --config
+cat log.txt | pipetint --config
 
 # Use specific rule set
-cat log.txt | tinty --rule error-logs,timestamps
+cat log.txt | pipetint --rule error-logs,timestamps
 ```
 
 ---
@@ -79,18 +79,18 @@ cat log.txt | tinty --rule error-logs,timestamps
 **CLI Usage**:
 ```bash
 # Use built-in theme
-cat app.log | tinty --theme log-levels
+cat app.log | pipetint --theme log-levels
 
 # List available themes
-tinty --list-themes
+pipetint --list-themes
 
 # Show theme details
-tinty --theme log-levels --show
+pipetint --theme log-levels --show
 ```
 
 **Python API**:
 ```python
-from tinty.themes import LogLevelsTheme
+from pipetint.themes import LogLevelsTheme
 
 result = LogLevelsTheme().apply(log_text)
 ```
@@ -110,18 +110,18 @@ result = LogLevelsTheme().apply(log_text)
 **CLI Usage**:
 ```bash
 # Hex colors
-echo "gradient text" | tinty 'gradient' '#ff0000,#00ff00,#0000ff'
+echo "gradient text" | pipetint 'gradient' '#ff0000,#00ff00,#0000ff'
 
 # RGB colors
-echo "colorful" | tinty 'colorful' 'rgb(255,0,0)'
+echo "colorful" | pipetint 'colorful' 'rgb(255,0,0)'
 
 # Gradients
-echo "rainbow" | tinty '.' 'gradient(red, orange, yellow, green, blue, purple)'
+echo "rainbow" | pipetint '.' 'gradient(red, orange, yellow, green, blue, purple)'
 ```
 
 **Python API**:
 ```python
-from tinty import ColorizedString
+from pipetint import ColorizedString
 
 text = ColorizedString("rainbow")
 result = text.highlight(r'.', gradient=['#ff0000', '#00ff00', '#0000ff'])
@@ -142,18 +142,18 @@ result = text.highlight(r'.', gradient=['#ff0000', '#00ff00', '#0000ff'])
 **CLI Usage**:
 ```bash
 # Syntax highlight Python code
-cat script.py | tinty --syntax python
+cat script.py | pipetint --syntax python
 
 # Auto-detect from file
-tinty --syntax auto < script.py
+pipetint --syntax auto < script.py
 
 # Custom color scheme
-cat code.js | tinty --syntax javascript --style monokai
+cat code.js | pipetint --syntax javascript --style monokai
 ```
 
 **Python API**:
 ```python
-from tinty.syntax import highlight_code
+from pipetint.syntax import highlight_code
 
 result = highlight_code(code, language='python', style='monokai')
 ```
@@ -174,13 +174,13 @@ result = highlight_code(code, language='python', style='monokai')
 **CLI Usage**:
 ```bash
 # Use PCRE2 for better performance
-cat large.log | tinty --engine pcre2 'pattern' red
+cat large.log | pipetint --engine pcre2 'pattern' red
 
 # Streaming mode (don't buffer entire file)
-tail -f app.log | tinty --stream 'ERROR' red
+tail -f app.log | pipetint --stream 'ERROR' red
 
 # Benchmark against other tools
-tinty --benchmark
+pipetint --benchmark
 ```
 
 ---
@@ -193,23 +193,23 @@ tinty --benchmark
 - **Conditional coloring**: Color based on numeric thresholds
   ```bash
   # Color based on value ranges
-  cat metrics.txt | tinty --threshold 'cpu:\d+' '0-50:green,51-80:yellow,81-100:red'
+  cat metrics.txt | pipetint --threshold 'cpu:\d+' '0-50:green,51-80:yellow,81-100:red'
   ```
 
 - **Color interpolation**: Smooth gradients across text
   ```bash
-  echo "gradient" | tinty '.' --interpolate '#ff0000,#0000ff'
+  echo "gradient" | pipetint '.' --interpolate '#ff0000,#0000ff'
   ```
 
 - **Named capture groups**: Reference groups by name
   ```bash
-  echo "2025-01-20" | tinty '(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})' 'year:blue,month:green,day:red'
+  echo "2025-01-20" | pipetint '(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})' 'year:blue,month:green,day:red'
   ```
 
 - **Context-aware coloring**: Different colors based on surrounding text
   ```bash
   # Color "100" differently based on whether it's before "ms" or "GB"
-  cat output.txt | tinty --context
+  cat output.txt | pipetint --context
   ```
 
 ---
@@ -231,23 +231,23 @@ These features are being evaluated but not yet committed:
 
 - **Interactive mode**: Wrap interactive programs (like ChromaTerm)
   ```bash
-  tinty --interactive ssh user@host
+  pipetint --interactive ssh user@host
   ```
 
 - **Color picker**: Visual color selection tool
   ```bash
-  tinty --pick-color  # Opens TUI color picker
+  pipetint --pick-color  # Opens TUI color picker
   ```
 
 - **Export formats**: Export colored text to HTML, RTF, ANSI art
   ```bash
-  cat code.py | tinty --syntax python --export html > code.html
+  cat code.py | pipetint --syntax python --export html > code.html
   ```
 
 - **Plugin system**: Allow custom color processors
   ```python
   # Custom plugin for business logic
-  from tinty.plugins import ColorPlugin
+  from pipetint.plugins import ColorPlugin
 
   class CustomHighlighter(ColorPlugin):
       def process(self, text):
@@ -257,7 +257,7 @@ These features are being evaluated but not yet committed:
 
 - **Multi-language support**: Localized error messages and help text
 
-- **GUI configuration tool**: Visual editor for creating .tintyrc files
+- **GUI configuration tool**: Visual editor for creating .pipetintrc files
 
 ---
 
@@ -270,7 +270,7 @@ We welcome feedback on the roadmap! Please:
 - 🐛 Report bugs and pain points
 - 🤝 Contribute implementations
 
-**Provide feedback**: https://github.com/jim-my/tinty/issues
+**Provide feedback**: https://github.com/jim-my/pipetint/issues
 
 ---
 

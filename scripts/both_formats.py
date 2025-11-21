@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Demonstrates that both bg_red and red_bg formats produce identical output."""
 
-from tinty import ColorizedString
+from pipetint import ColorizedString
 
 print("🔄 Color Name Flexibility - Both Formats Work\n")
 

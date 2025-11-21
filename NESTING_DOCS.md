@@ -26,7 +26,7 @@ Tinty intelligently handles overlapping colors with automatic priority resolutio
 Inner (more specific) capture groups automatically override outer ones:
 
 ```python
-from tinty import ColorizedString
+from pipetint import ColorizedString
 
 text = ColorizedString("hello world")
 
@@ -90,20 +90,20 @@ text.highlight(r'hello', ['red_bg'])    # Natural format (auto-normalized)
 
 ```bash
 # Nested groups - inner blue wins over outer red
-echo "hello world" | tinty '(h.(ll))' red,blue
+echo "hello world" | pipetint '(h.(ll))' red,blue
 
 # Background + foreground coexist (different channels)
-echo "hello world" | tinty '(h.(ll))' bg_red,blue
+echo "hello world" | pipetint '(h.(ll))' bg_red,blue
 # Result: "he" = red background
 #         "ll" = red background + blue foreground
 
 # Pipeline - later commands have higher priority
-echo "hello world" | tinty 'hello' red | tinty 'world' blue
+echo "hello world" | pipetint 'hello' red | pipetint 'world' blue
 # Result: "hello" is red, "world" is blue
 
 # Both color formats work
-echo "hello" | tinty 'hello' bg_red     # Official
-echo "hello" | tinty 'hello' red_bg     # Natural (auto-normalized)
+echo "hello" | pipetint 'hello' bg_red     # Official
+echo "hello" | pipetint 'hello' red_bg     # Natural (auto-normalized)
 ```
 
 ### Advanced Pattern Control
@@ -113,11 +113,11 @@ Control priority through regex structure:
 ```bash
 # Want inner group to have higher priority?
 # Put it deeper in the nesting:
-echo "hello" | tinty '(he(ll)o)' red,blue
+echo "hello" | pipetint '(he(ll)o)' red,blue
 # Result: "he" and "o" are red, "ll" is blue (deeper nesting)
 
 # Want same priority? Use sibling groups:
-echo "hello" | tinty '(he)(ll)' red,blue
+echo "hello" | pipetint '(he)(ll)' red,blue
 # Result: Both at same depth, order determines priority
 ```
 
@@ -126,7 +126,7 @@ echo "hello" | tinty '(he)(ll)' red,blue
 ### Log File Highlighting
 
 ```python
-from tinty import ColorizedString
+from pipetint import ColorizedString
 
 log = "ERROR: Connection failed at 10:30:45"
 result = (ColorizedString(log)
@@ -153,10 +153,10 @@ print(result)
 
 ```bash
 # Stage 1: Highlight errors in red
-cat log.txt | tinty 'ERROR|CRITICAL' red > /tmp/colored.txt
+cat log.txt | pipetint 'ERROR|CRITICAL' red > /tmp/colored.txt
 
 # Stage 2: Add blue highlighting for timestamps (higher priority)
-cat /tmp/colored.txt | tinty '\d{2}:\d{2}:\d{2}' blue
+cat /tmp/colored.txt | pipetint '\d{2}:\d{2}:\d{2}' blue
 
 # Result: Both colors preserved, timestamps override errors if overlapping
 ```
@@ -173,46 +173,46 @@ Replace the CLI section with:
 
 ```bash
 # Simple pattern matching
-echo "hello world" | tinty 'l' red
+echo "hello world" | pipetint 'l' red
 
 # Pattern groups
-echo "hello world" | tinty '(h.*o).*(w.*d)' red blue
+echo "hello world" | pipetint '(h.*o).*(w.*d)' red blue
 ```
 
 ### Advanced: Nested Colors
 
 ```bash
 # Nested regex groups - inner wins
-echo "hello world" | tinty '(h.(ll))' red,blue
+echo "hello world" | pipetint '(h.(ll))' red,blue
 # Output: "he" is red, "ll" is blue (inner group has higher priority)
 
 # Channel isolation - foreground + background
-echo "hello world" | tinty '(h.(ll))' bg_red,blue
+echo "hello world" | pipetint '(h.(ll))' bg_red,blue
 # Output: "he" = red bg, "ll" = red bg + blue fg
 
 # Color name formats (both work)
-echo "hello" | tinty 'hello' bg_red    # Official format
-echo "hello" | tinty 'hello' red_bg    # Natural format (auto-normalized)
+echo "hello" | pipetint 'hello' bg_red    # Official format
+echo "hello" | pipetint 'hello' red_bg    # Natural format (auto-normalized)
 
 # Space or comma-separated colors
-echo "test" | tinty '(t)(e)' red,blue   # Comma-separated
-echo "test" | tinty '(t)(e)' red blue   # Space-separated
+echo "test" | pipetint '(t)(e)' red,blue   # Comma-separated
+echo "test" | pipetint '(t)(e)' red blue   # Space-separated
 ```
 
 ### Options
 
 ```bash
 # List all available colors
-tinty --list-colors
+pipetint --list-colors
 
 # Case sensitive matching
-echo "Hello World" | tinty --case-sensitive 'Hello' green
+echo "Hello World" | pipetint --case-sensitive 'Hello' green
 
 # Verbose mode (debugging)
-echo "test" | tinty --verbose 'test' red
+echo "test" | pipetint --verbose 'test' red
 
 # Clear all previous colors before applying new ones
-echo "hello world" | tinty 'hello' red | tinty --replace-all 'world' blue
+echo "hello world" | pipetint 'hello' red | pipetint --replace-all 'world' blue
 # Result: Only "world" is blue, "hello" has no color
 ```
 ```

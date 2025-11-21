@@ -2,7 +2,7 @@
 Tests for the enhanced colorization API.
 """
 
-from tinty.enhanced import C, ColorContext, ColorString, colored, txt
+from pipetint.enhanced import C, ColorContext, ColorString, colored, txt
 
 
 class TestColorString:
@@ -359,8 +359,8 @@ class TestBackwardCompatibility:
 
     def test_can_import_legacy_api(self):
         """Test that legacy API still works."""
-        from tinty import Colorize, ColorizedString
-        from tinty.tinty import colorize  # Import the function directly
+        from pipetint import Colorize, ColorizedString
+        from pipetint.tinty import colorize  # Import the function directly
 
         # Test legacy colorizer
         colorizer = Colorize()
@@ -378,7 +378,7 @@ class TestBackwardCompatibility:
 
     def test_legacy_and_enhanced_interop(self):
         """Test that legacy and enhanced APIs can work together."""
-        from tinty.tinty import colorize
+        from pipetint.tinty import colorize
 
         # Use legacy function result with enhanced API
         legacy_result = colorize.colorize("hello", "red")

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Demonstrates channel isolation - foreground and background work independently."""
 
-from tinty import ColorizedString
+from pipetint import ColorizedString
 
 print("🎯 Channel Isolation - Foreground + Background Coexist\n")
 

@@ -4,9 +4,9 @@
 
 [![CI](https://github.com/jim-my/colorize/workflows/CI/badge.svg)](https://github.com/jim-my/colorize/actions)
 [![codecov](https://codecov.io/gh/jim-my/colorize/branch/main/graph/badge.svg)](https://codecov.io/gh/jim-my/colorize)
-[![PyPI version](https://badge.fury.io/py/tinty.svg)](https://badge.fury.io/py/tinty)
-[![Python versions](https://img.shields.io/pypi/pyversions/tinty.svg)](https://pypi.org/project/tinty)
-[![Production Ready](https://img.shields.io/badge/status-production%20ready-brightgreen.svg)](https://github.com/jim-my/tinty)
+[![PyPI version](https://badge.fury.io/py/pipetint.svg)](https://badge.fury.io/py/pipetint)
+[![Python versions](https://img.shields.io/pypi/pyversions/pipetint.svg)](https://pypi.org/project/pipetint)
+[![Production Ready](https://img.shields.io/badge/status-production%20ready-brightgreen.svg)](https://github.com/jim-my/pipetint)
 
 Python library and CLI tool for terminal text colorization with **automatic priority-based color nesting**, **pipeline composition**, and **ANSI-aware pattern matching**. Zero dependencies, pure Python.
 
@@ -15,7 +15,7 @@ Python library and CLI tool for terminal text colorization with **automatic prio
 ## 📖 Quick Navigation
 
 - [⚡ Quick Start](#-quick-start) - Get started in 30 seconds
-- [🎨 What Makes Tinty Unique](#-what-makes-tinty-unique) - Smart nesting, pipelines, channel isolation
+- [🎨 What Makes Tinty Unique](#-what-makes-pipetint-unique) - Smart nesting, pipelines, channel isolation
 - [💡 Real-World Examples](#-real-world-examples) - Log highlighting, syntax highlighting
 - [📋 Full Documentation](#-full-documentation) - Complete API reference
 - [🚀 Installation](#-installation)
@@ -26,18 +26,18 @@ Python library and CLI tool for terminal text colorization with **automatic prio
 
 ```bash
 # Install
-pip install tinty
+pip install pipetint
 
 # Smart color nesting - inner groups automatically win
-echo "hello world" | tinty '(h.(ll))' red,blue
+echo "hello world" | pipetint '(h.(ll))' red,blue
 # Output: "he" is red, "ll" is blue (inner has higher priority)
 
 # Pipeline composition - colors preserved across stages
-echo "hello world" | tinty 'hello' red | tinty 'world' blue
+echo "hello world" | pipetint 'hello' red | pipetint 'world' blue
 # Output: "hello" is red, "world" is blue
 
 # Python API with type-safe constants
-from tinty import colored, RED, BLUE, BOLD
+from pipetint import colored, RED, BLUE, BOLD
 print(colored("Error") | RED | BOLD)
 ```
 
@@ -51,7 +51,7 @@ Automatic priority-based rendering without manual z-index configuration:
 
 ```bash
 # Nested regex groups - inner automatically wins
-echo "hello world" | tinty '(h.(ll))' red,blue
+echo "hello world" | pipetint '(h.(ll))' red,blue
 # "he" is red, "ll" is blue (inner group has higher priority)
 ```
 
@@ -66,10 +66,10 @@ Colors preserved across pipeline stages with intelligent priority:
 
 ```bash
 # Both colors preserved
-echo "hello world" | tinty 'hello' red | tinty 'world' blue
+echo "hello world" | pipetint 'hello' red | pipetint 'world' blue
 
 # Later stage overrides overlaps
-echo "hello world" | tinty 'hello' red | tinty 'llo w' green
+echo "hello world" | pipetint 'hello' red | pipetint 'llo w' green
 # "he" is red, "llo w" is green (overrides)
 ```
 
@@ -79,7 +79,7 @@ Foreground, background, and attributes work independently:
 
 ```bash
 # Background + foreground coexist in same text
-echo "hello world" | tinty '(h.(ll))' bg_red,blue
+echo "hello world" | pipetint '(h.(ll))' bg_red,blue
 # "he" = red background only
 # "ll" = red background AND blue foreground (both channels!)
 ```
@@ -102,7 +102,7 @@ result = colored_text.highlight(r'Hello', ['green'])
 ### Log File Highlighting
 
 ```python
-from tinty import ColorizedString
+from pipetint import ColorizedString
 
 log = "ERROR: Connection failed at 10:30:45"
 result = (ColorizedString(log)
@@ -117,10 +117,10 @@ print(result)
 
 ```bash
 # Stage 1: Highlight errors
-cat log.txt | tinty 'ERROR|CRITICAL' red > /tmp/colored.txt
+cat log.txt | pipetint 'ERROR|CRITICAL' red > /tmp/colored.txt
 
 # Stage 2: Add timestamps (higher priority)
-cat /tmp/colored.txt | tinty '\d{2}:\d{2}:\d{2}' blue
+cat /tmp/colored.txt | pipetint '\d{2}:\d{2}:\d{2}' blue
 # Both colors preserved, timestamps override errors if overlapping
 ```
 
@@ -141,11 +141,11 @@ print(result)
 
 ```bash
 # From PyPI
-pip install tinty
+pip install pipetint
 
 # From source
-git clone https://github.com/jim-my/tinty.git
-cd tinty
+git clone https://github.com/jim-my/pipetint.git
+cd pipetint
 pip install -e .
 ```
 
@@ -178,42 +178,42 @@ pip install -e .
 
 ```bash
 # Simple pattern matching
-echo "hello world" | tinty 'l' red
+echo "hello world" | pipetint 'l' red
 
 # Pattern groups
-echo "hello world" | tinty '(h.*o).*(w.*d)' red blue
+echo "hello world" | pipetint '(h.*o).*(w.*d)' red blue
 ```
 
 #### Advanced: Nested Colors
 
 ```bash
 # Nested regex groups - inner wins
-echo "hello world" | tinty '(h.(ll))' red,blue
+echo "hello world" | pipetint '(h.(ll))' red,blue
 # Output: "he" is red, "ll" is blue
 
 # Channel isolation - foreground + background
-echo "hello world" | tinty '(h.(ll))' bg_red,blue
+echo "hello world" | pipetint '(h.(ll))' bg_red,blue
 # Output: "he" = red bg, "ll" = red bg + blue fg
 
 # Color name formats (both work)
-echo "hello" | tinty 'hello' bg_red    # Official format
-echo "hello" | tinty 'hello' red_bg    # Natural format (auto-normalized)
+echo "hello" | pipetint 'hello' bg_red    # Official format
+echo "hello" | pipetint 'hello' red_bg    # Natural format (auto-normalized)
 ```
 
 #### CLI Options
 
 ```bash
 # List all available colors
-tinty --list-colors
+pipetint --list-colors
 
 # Case sensitive matching
-echo "Hello World" | tinty --case-sensitive 'Hello' green
+echo "Hello World" | pipetint --case-sensitive 'Hello' green
 
 # Verbose mode (debugging)
-echo "test" | tinty --verbose 'test' red
+echo "test" | pipetint --verbose 'test' red
 
 # Clear all previous colors before applying new ones
-echo "hello world" | tinty 'hello' red | tinty --replace-all 'world' blue
+echo "hello world" | pipetint 'hello' red | pipetint --replace-all 'world' blue
 # Result: Only "world" is blue, "hello" has no color
 ```
 
@@ -222,7 +222,7 @@ echo "hello world" | tinty 'hello' red | tinty --replace-all 'world' blue
 #### Type-Safe Constants (Recommended)
 
 ```python
-from tinty import colored, txt, RED, GREEN, BLUE, YELLOW, BOLD, BG_WHITE, UNDERLINE
+from pipetint import colored, txt, RED, GREEN, BLUE, YELLOW, BOLD, BG_WHITE, UNDERLINE
 
 # Type-safe constants with operator chaining
 print(colored("Success") | GREEN | BOLD)
@@ -234,7 +234,7 @@ print(txt("Info") >> BLUE >> UNDERLINE)
 #### Global Object with Constants
 
 ```python
-from tinty import C, RED, BOLD
+from pipetint import C, RED, BOLD
 
 C.red("hello")              # Direct color method
 C("hello") | RED | BOLD     # Factory with type-safe constants
@@ -244,7 +244,7 @@ C("hello", "red")           # Direct colorization (legacy)
 #### Pattern Highlighting
 
 ```python
-from tinty import ColorizedString
+from pipetint import ColorizedString
 
 # Highlight search terms
 text = "The quick brown fox jumps over the lazy dog"
@@ -276,7 +276,7 @@ print(result)
 Use constants instead of error-prone string literals:
 
 ```python
-from tinty import colored, RED, GREEN, BLUE, YELLOW, BOLD, BG_WHITE
+from pipetint import colored, RED, GREEN, BLUE, YELLOW, BOLD, BG_WHITE
 
 # ✅ Type-safe with IDE autocompletion and error checking
 error_msg = colored("CRITICAL") | RED | BOLD | BG_WHITE
@@ -303,7 +303,7 @@ error_msg = colored("CRITICAL") | "red" | "typo"  # Runtime error!
 Inner (more specific) capture groups automatically override outer ones:
 
 ```python
-from tinty import ColorizedString
+from pipetint import ColorizedString
 
 text = ColorizedString("hello world")
 
@@ -374,7 +374,7 @@ text.highlight(r'hello', ['red_bg'])    # Natural format (auto-normalized)
 pytest
 
 # Run with coverage
-pytest --cov=tinty
+pytest --cov=pipetint
 
 # Run specific test file
 pytest tests/test_nesting.py
@@ -425,7 +425,7 @@ Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines
 See [ROADMAP.md](ROADMAP.md) for planned features and future direction.
 
 **Upcoming features:**
-- Configuration file support (.tintyrc.yaml)
+- Configuration file support (.pipetintrc.yaml)
 - Built-in color themes (log-levels, git-diff, python)
 - TrueColor (24-bit RGB) support
 - Pygments integration for syntax highlighting
@@ -451,7 +451,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 The original API remains fully supported for backward compatibility:
 
 ```python
-from tinty import Colorize, ColorizedString
+from pipetint import Colorize, ColorizedString
 
 # Original Colorize class
 colorizer = Colorize()

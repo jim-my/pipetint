@@ -13,13 +13,13 @@ def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Colorize text from stdin using ANSI color codes",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        usage="echo 'text' | tinty [PATTERN] [COLORS...]\n       tinty --list-colors",
+        usage="echo 'text' | pipetint [PATTERN] [COLORS...]\n       pipetint --list-colors",
         epilog="""
 Examples:
-  echo "hello world" | tinty 'l.*' yellow
-  echo "hello world" | tinty '(ll).*(ld)' red,bg_blue blue,bg_red
-  echo "hello world" | tinty '(l).*(ld)' red bg_red
-  tinty --list-colors
+  echo "hello world" | pipetint 'l.*' yellow
+  echo "hello world" | pipetint '(ll).*(ld)' red,bg_blue blue,bg_red
+  echo "hello world" | pipetint '(l).*(ld)' red bg_red
+  pipetint --list-colors
         """,
     )
 

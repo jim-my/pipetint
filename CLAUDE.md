@@ -10,9 +10,9 @@ This is a Python library for terminal text colorization and highlighting, inspir
 
 The project follows modern Python packaging standards with the following structure:
 
-- **src/tinty/**: Main package directory
+- **src/pipetint/**: Main package directory
   - `color_codes.py`: Core ANSI color code definitions and ColorManager class
-  - `tinty.py`: Main Colorize class and ColorizedString implementation
+  - `pipetint.py`: Main Colorize class and ColorizedString implementation
   - `colors.py`: Type-safe color constants for enhanced API
   - `enhanced.py`: Enhanced colorization API with production-safe patterns
   - `cli.py`: Command-line interface implementation
@@ -92,7 +92,7 @@ pytest
 
 With coverage:
 ```bash
-pytest --cov=tinty
+pytest --cov=pipetint
 ```
 
 ### Linting and Formatting
@@ -121,7 +121,7 @@ pre-commit run --all-files
 ### As a Library
 
 ```python
-from tinty import Colorize, ColorizedString
+from pipetint import Colorize, ColorizedString
 
 # Basic usage
 colorizer = Colorize()
@@ -137,13 +137,13 @@ highlighted = cs.highlight(r"World", ["blue"])
 
 ```bash
 # Basic usage
-echo "hello world" | tinty 'l' red
+echo "hello world" | pipetint 'l' red
 
 # Pattern highlighting
-echo "hello world" | tinty '(h.*o).*(w.*d)' red blue
+echo "hello world" | pipetint '(h.*o).*(w.*d)' red blue
 
 # List available colors
-tinty --list-colors
+pipetint --list-colors
 ```
 
 ## Project Configuration

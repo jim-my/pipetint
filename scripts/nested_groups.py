@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Demonstrates nested regex groups with priority-based color nesting."""
 
-from tinty import ColorizedString
+from pipetint import ColorizedString
 
 print("🎨 Nested Regex Groups - Inner Wins\n")
 

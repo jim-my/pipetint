@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from tinty.cli import create_parser, list_colors, main, process_line
+from pipetint.cli import create_parser, list_colors, main, process_line
 
 
 class TestCreateParser:
@@ -100,7 +100,7 @@ class TestProcessLine:
         assert "\033[0m" in result  # Reset
 
         # Check that original text is preserved when colors are removed
-        from tinty import ColorizedString
+        from pipetint import ColorizedString
 
         cs = ColorizedString(result)
         assert cs.remove_color() == "hello world"
@@ -153,8 +153,8 @@ class TestMain:
         with patch("sys.stdin") as mock_stdin:
             mock_stdin.isatty.return_value = True
 
-            with patch("sys.argv", ["tinty"]):
-                with patch("tinty.cli.create_parser") as mock_parser:
+            with patch("sys.argv", ["pipetint"]):
+                with patch("pipetint.cli.create_parser") as mock_parser:
                     mock_parser_instance = MagicMock()
                     mock_parser.return_value = mock_parser_instance
                     mock_parser_instance.parse_args.return_value = MagicMock(
@@ -168,14 +168,14 @@ class TestMain:
 
     def test_main_list_colors(self):
         """Test main with list colors option."""
-        with patch("sys.argv", ["tinty", "--list-colors"]):
-            with patch("tinty.cli.list_colors") as mock_list_colors:
+        with patch("sys.argv", ["pipetint", "--list-colors"]):
+            with patch("pipetint.cli.list_colors") as mock_list_colors:
                 main()
                 mock_list_colors.assert_called_once()
 
     def test_main_invalid_regex(self):
         """Test main with invalid regex pattern."""
-        with patch("sys.argv", ["tinty", "[invalid"]):
+        with patch("sys.argv", ["pipetint", "[invalid"]):
             with patch("sys.stdin", io.StringIO("test input\n")):
                 with patch("sys.exit", side_effect=SystemExit(1)) as mock_exit:
                     with pytest.raises(SystemExit):
@@ -186,7 +186,7 @@ class TestMain:
         """Test main processing input."""
         test_input = "hello world\ntest line\n"
 
-        with patch("sys.argv", ["tinty", "l", "red"]):
+        with patch("sys.argv", ["pipetint", "l", "red"]):
             with patch("sys.stdin", io.StringIO(test_input)):
                 with patch("sys.stdout", io.StringIO()) as mock_stdout:
                     main()
@@ -198,7 +198,7 @@ class TestMain:
                     assert "\033[0m" in output  # Reset
 
                     # Check that original text is preserved when colors are removed
-                    from tinty import ColorizedString
+                    from pipetint import ColorizedString
 
                     cs = ColorizedString(output)
                     cleaned_output = cs.remove_color()
@@ -207,7 +207,7 @@ class TestMain:
 
     def test_main_keyboard_interrupt(self):
         """Test main handles keyboard interrupt."""
-        with patch("sys.argv", ["tinty", "test"]):
+        with patch("sys.argv", ["pipetint", "test"]):
             with patch("sys.stdin") as mock_stdin:
                 mock_stdin.__iter__.side_effect = KeyboardInterrupt()
 
@@ -217,7 +217,7 @@ class TestMain:
 
     def test_main_broken_pipe(self):
         """Test main handles broken pipe."""
-        with patch("sys.argv", ["tinty", "test"]):
+        with patch("sys.argv", ["pipetint", "test"]):
             with patch("sys.stdin") as mock_stdin:
                 mock_stdin.__iter__.side_effect = BrokenPipeError()
 
@@ -229,7 +229,7 @@ class TestMain:
         """Test main with case sensitive option."""
         test_input = "Hello World\n"
 
-        with patch("sys.argv", ["tinty", "h", "red", "--case-sensitive"]):
+        with patch("sys.argv", ["pipetint", "h", "red", "--case-sensitive"]):
             with patch("sys.stdin", io.StringIO(test_input)):
                 with patch("sys.stdout", io.StringIO()) as mock_stdout:
                     main()
@@ -245,7 +245,7 @@ class TestMain:
         """Test main with verbose option."""
         test_input = "hello world\n"
 
-        with patch("sys.argv", ["tinty", "l", "red", "--verbose"]):
+        with patch("sys.argv", ["pipetint", "l", "red", "--verbose"]):
             with patch("sys.stdin", io.StringIO(test_input)):
                 with patch("sys.stdout", io.StringIO()):
                     with patch("sys.stderr", io.StringIO()) as mock_stderr:
@@ -266,7 +266,7 @@ class TestCLIIntegration:
         """Test basic CLI usage."""
         test_input = "hello world\n"
 
-        with patch("sys.argv", ["tinty", "l", "red"]):
+        with patch("sys.argv", ["pipetint", "l", "red"]):
             with patch("sys.stdin", io.StringIO(test_input)):
                 with patch("sys.stdout", io.StringIO()) as mock_stdout:
                     main()
@@ -278,7 +278,7 @@ class TestCLIIntegration:
                     assert "\033[0m" in output
 
                     # Check that original text is preserved when colors are removed
-                    from tinty import ColorizedString
+                    from pipetint import ColorizedString
 
                     cs = ColorizedString(output)
                     assert "hello world" in cs.remove_color()
@@ -287,7 +287,7 @@ class TestCLIIntegration:
         """Test CLI with multiple colors."""
         test_input = "hello world\n"
 
-        with patch("sys.argv", ["tinty", "(h)(ello)", "red", "blue"]):
+        with patch("sys.argv", ["pipetint", "(h)(ello)", "red", "blue"]):
             with patch("sys.stdin", io.StringIO(test_input)):
                 with patch("sys.stdout", io.StringIO()) as mock_stdout:
                     main()
@@ -299,7 +299,7 @@ class TestCLIIntegration:
                     assert "\033[0m" in output
 
                     # Check that original text is preserved when colors are removed
-                    from tinty import ColorizedString
+                    from pipetint import ColorizedString
 
                     cs = ColorizedString(output)
                     assert "hello world" in cs.remove_color()
@@ -308,7 +308,7 @@ class TestCLIIntegration:
         """Test CLI with default pattern."""
         test_input = "hello world\n"
 
-        with patch("sys.argv", ["tinty"]):
+        with patch("sys.argv", ["pipetint"]):
             with patch("sys.stdin", io.StringIO(test_input)):
                 with patch("sys.stdout", io.StringIO()) as mock_stdout:
                     main()
@@ -320,7 +320,7 @@ class TestCLIIntegration:
                     assert "\033[0m" in output
 
                     # Check that original text is preserved when colors are removed
-                    from tinty import ColorizedString
+                    from pipetint import ColorizedString
 
                     cs = ColorizedString(output)
                     assert "hello world" in cs.remove_color()
@@ -329,7 +329,7 @@ class TestCLIIntegration:
         """Test CLI with pattern that doesn't match."""
         test_input = "hello world\n"
 
-        with patch("sys.argv", ["tinty", "xyz"]):
+        with patch("sys.argv", ["pipetint", "xyz"]):
             with patch("sys.stdin", io.StringIO(test_input)):
                 with patch("sys.stdout", io.StringIO()) as mock_stdout:
                     main()
@@ -342,12 +342,12 @@ class TestCLIIntegration:
 
     def test_cli_piping_with_no_color(self):
         """Test piping a colored string to a no_color command."""
-        from tinty import ColorizedString
+        from pipetint import ColorizedString
 
         # Simulate the first command's output
         colored_input = "he\033[31m\033[44mllo wor\033[0m\033[34m\033[41mld\033[0m\n"
 
-        with patch("sys.argv", ["tinty", ".*", "no_color"]):
+        with patch("sys.argv", ["pipetint", ".*", "no_color"]):
             with patch("sys.stdin", io.StringIO(colored_input)):
                 with patch("sys.stdout", io.StringIO()) as mock_stdout:
                     main()
@@ -360,12 +360,12 @@ class TestCLIIntegration:
 
     def test_cli_replace_all_flag(self):
         """Test --replace-all flag clears previous colors."""
-        from tinty import ColorizedString
+        from pipetint import ColorizedString
 
         # Simulate colored input from previous pipeline stage
         colored_input = "\033[31mhello\033[0m world\n"
 
-        with patch("sys.argv", ["tinty", "--replace-all", "world", "blue"]):
+        with patch("sys.argv", ["pipetint", "--replace-all", "world", "blue"]):
             with patch("sys.stdin", io.StringIO(colored_input)):
                 with patch("sys.stdout", io.StringIO()) as mock_stdout:
                     main()
@@ -383,7 +383,7 @@ class TestCLIIntegration:
         """Test --replace-all with verbose output."""
         colored_input = "\033[31mhello\033[0m world\n"
 
-        argv = ["tinty", "--replace-all", "--verbose", "world", "blue"]
+        argv = ["pipetint", "--replace-all", "--verbose", "world", "blue"]
         with patch("sys.argv", argv):
             with patch("sys.stdin", io.StringIO(colored_input)):
                 with patch("sys.stdout", io.StringIO()):
@@ -404,7 +404,7 @@ class TestCLIIntegration:
         mock_stdout = MagicMock()
         mock_stdout.write = MagicMock()
 
-        with patch("sys.argv", ["tinty", "-u", "l", "red"]):
+        with patch("sys.argv", ["pipetint", "-u", "l", "red"]):
             with patch("sys.stdin", io.StringIO(test_input)):
                 with patch("sys.stdout", mock_stdout):
                     main()
@@ -419,7 +419,7 @@ class TestCLIIntegration:
         mock_stdout = MagicMock()
         mock_stdout.write = MagicMock()
 
-        with patch("sys.argv", ["tinty", "l", "red"]):
+        with patch("sys.argv", ["pipetint", "l", "red"]):
             with patch("sys.stdin", io.StringIO(test_input)):
                 with patch("sys.stdout", mock_stdout):
                     main()
@@ -429,11 +429,11 @@ class TestCLIIntegration:
 
     def test_cli_unbuffered_flag_output(self):
         """Test --unbuffered flag still produces correct colorized output."""
-        from tinty import ColorizedString
+        from pipetint import ColorizedString
 
         test_input = "hello world\n"
 
-        with patch("sys.argv", ["tinty", "--unbuffered", "l", "red"]):
+        with patch("sys.argv", ["pipetint", "--unbuffered", "l", "red"]):
             with patch("sys.stdin", io.StringIO(test_input)):
                 with patch("sys.stdout", io.StringIO()) as mock_stdout:
                     main()
@@ -450,7 +450,7 @@ class TestCLIIntegration:
         test_input = "hello world\n"
 
         # red,swapcolor should both apply to group 1 ("hello")
-        with patch("sys.argv", ["tinty", "(.{5}).*", "red,swapcolor"]):
+        with patch("sys.argv", ["pipetint", "(.{5}).*", "red,swapcolor"]):
             with patch("sys.stdin", io.StringIO(test_input)):
                 with patch("sys.stdout", io.StringIO()) as mock_stdout:
                     main()
@@ -466,7 +466,7 @@ class TestCLIIntegration:
         test_input = "hello world\n"
 
         # Group 1 (hello): red,bold  Group 2 (world): blue,underline
-        argv = ["tinty", "(hello) (world)", "red,bold", "blue,underline"]
+        argv = ["pipetint", "(hello) (world)", "red,bold", "blue,underline"]
         with patch("sys.argv", argv):
             with patch("sys.stdin", io.StringIO(test_input)):
                 with patch("sys.stdout", io.StringIO()) as mock_stdout:

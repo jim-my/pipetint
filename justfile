@@ -17,7 +17,7 @@ test:
 
 # Run tests with coverage
 test-cov:
-    poetry run pytest --cov=tinty --cov-report=html --cov-report=term
+    poetry run pytest --cov=pipetint --cov-report=html --cov-report=term
 
 # Run type checking
 typecheck:
@@ -64,11 +64,11 @@ example script="quickstart":
 
 # Run CLI help
 cli-help:
-    poetry run tinty --help
+    poetry run pipetint --help
 
 # Test CLI functionality
 cli-test:
-    echo "hello world" | poetry run tinty 'l' red
+    echo "hello world" | poetry run pipetint 'l' red
 
 # Create a new release (requires version bump)
 release: check build-poetry
@@ -84,13 +84,13 @@ publish: build-poetry
 
 # Show package info
 info:
-    @echo "Package: tinty"
-    @echo "Version: $(poetry run python -c 'import tinty; print(tinty.__version__)' 2>/dev/null || echo 'not installed')"
-    @echo "Location: $(poetry run python -c 'import tinty; print(tinty.__file__)' 2>/dev/null || echo 'not found')"
+    @echo "Package: pipetint"
+    @echo "Version: $(poetry run python -c 'import pipetint; print(pipetint.__version__)' 2>/dev/null || echo 'not installed')"
+    @echo "Location: $(poetry run python -c 'import pipetint; print(pipetint.__file__)' 2>/dev/null || echo 'not found')"
 
 # Show available colors demo
 demo:
-    poetry run python -c "from tinty import C, RED, GREEN, BLUE, BOLD; print(C('✅ Tinty works!') | GREEN | BOLD)"
+    poetry run python -c "from pipetint import C, RED, GREEN, BLUE, BOLD; print(C('✅ Tinty works!') | GREEN | BOLD)"
 
 
 # Generate screenshots for README (syncs examples, creates scripts, captures images)

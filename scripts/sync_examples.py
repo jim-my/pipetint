@@ -10,7 +10,7 @@ from pathlib import Path
 # Define examples as the single source of truth
 EXAMPLES = {
     "basic_colors": {
-        "imports": "from tinty import BLUE, BOLD, GREEN, RED, YELLOW, colored",
+        "imports": "from pipetint import BLUE, BOLD, GREEN, RED, YELLOW, colored",
         "code_lines": [
             'print(colored("Success") | GREEN | BOLD)',
             'print(colored("Warning") | YELLOW)',
@@ -30,7 +30,7 @@ EXAMPLES = {
         "readme_subset": [0, 2],  # Show only the second line in README
     },
     "complex_styling": {
-        "imports": "from tinty import BG_WHITE, BLUE, BOLD, DIM, RED, YELLOW, colored",
+        "imports": "from pipetint import BG_WHITE, BLUE, BOLD, DIM, RED, YELLOW, colored",
         "code_lines": [
             'print(colored("SYSTEM ALERT") | RED | BOLD | BG_WHITE)',
             'print(str(colored("DEBUG") | DIM) + " - Application started")',
@@ -42,7 +42,7 @@ EXAMPLES = {
         "readme_subset": [0, 1, 2, 3, 4],  # Show alert, debug, and error
     },
     "pattern_highlighting": {
-        "imports": "from tinty import colored",
+        "imports": "from pipetint import colored",
         "code_lines": [
             'text = "The quick brown fox jumps over the lazy dog"',
             'highlighted = colored(text).highlight(r"(quick)|(fox)|(lazy)", ["red", "blue", "green"])',

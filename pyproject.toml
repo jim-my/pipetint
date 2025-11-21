@@ -3,9 +3,9 @@ requires = ["setuptools>=68", "setuptools_scm[toml]>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "tinty"
+name = "pipetint"
 dynamic = ["version"]
-description = "A Python library for terminal text colorization and highlighting"
+description = "Terminal text colorization with regex-based pattern highlighting and smart nesting"
 authors = [
     {name = "Jimmy"},
 ]
@@ -28,7 +28,7 @@ classifiers = [
     "Topic :: Text Processing",
     "Topic :: Utilities",
 ]
-keywords = ["color", "terminal", "ansi", "highlighting", "text", "cli"]
+keywords = ["color", "terminal", "ansi", "highlighting", "text", "cli", "pipe", "regex", "pattern"]
 dependencies = []
 
 [project.optional-dependencies]
@@ -44,13 +44,13 @@ cli = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/jim-my/tinty"
-Documentation = "https://github.com/jim-my/tinty"
-Repository = "https://github.com/jim-my/tinty"
-Issues = "https://github.com/jim-my/tinty/issues"
+Homepage = "https://github.com/jim-my/pipetint"
+Documentation = "https://github.com/jim-my/pipetint"
+Repository = "https://github.com/jim-my/pipetint"
+Issues = "https://github.com/jim-my/pipetint/issues"
 
 [project.scripts]
-tinty = "tinty.cli:main"
+pipetint = "pipetint.cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
@@ -58,15 +58,15 @@ package-dir = {"" = "src"}
 [tool.setuptools_scm]
 
 [tool.poetry]
-name = "tinty"
+name = "pipetint"
 version = "0.0.0"  # managed by setuptools-scm
-description = "A Python library for terminal text colorization and highlighting"
+description = "Terminal text colorization with regex-based pattern highlighting and smart nesting"
 authors = ["Jimmy"]
 readme = "README.md"
-homepage = "https://github.com/jim-my/tinty"
-repository = "https://github.com/jim-my/tinty"
-documentation = "https://github.com/jim-my/tinty"
-keywords = ["color", "terminal", "ansi", "highlighting", "text", "cli"]
+homepage = "https://github.com/jim-my/pipetint"
+repository = "https://github.com/jim-my/pipetint"
+documentation = "https://github.com/jim-my/pipetint"
+keywords = ["color", "terminal", "ansi", "highlighting", "text", "cli", "pipe", "regex", "pattern"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
@@ -84,7 +84,7 @@ classifiers = [
     "Topic :: Utilities",
 ]
 packages = [
-    {include = "tinty", from = "src"}
+    {include = "pipetint", from = "src"}
 ]
 
 [tool.poetry-dynamic-versioning]
@@ -110,7 +110,7 @@ build = "^1.0"
 poetry-dynamic-versioning = "^1.0"
 
 [tool.poetry.scripts]
-tinty = "tinty.cli:main"
+pipetint = "pipetint.cli:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -206,18 +206,18 @@ ignore = [
     "PLC0415", # Import at top level (allow in scripts)
     "E501",    # Line too long (scripts can be longer)
 ]
-"src/tinty/cli.py" = [
+"src/pipetint/cli.py" = [
     "T201",    # Allow print statements in CLI
     "PERF203", # try-except in loop (acceptable for CLI)
     "E501",    # Line too long (CLI can be longer)
 ]
-"src/tinty/color_codes.py" = [
+"src/pipetint/color_codes.py" = [
     "PLC0415", # Import at top level (re import in function)
     "E501",    # Line too long (regex pattern)
     "PLR6301", # Method could be static (keeping as instance methods for consistency)
     "PLR6201", # Use set literal (tuple is intentional for readability)
 ]
-"src/tinty/tinty.py" = [
+"src/pipetint/tinty.py" = [
     "PLR0912", # Too many branches (complex highlighting logic)
     "ARG002",  # Unused argument (value in __init__)
     "PERF401", # List comprehension suggestion (readability over perf)

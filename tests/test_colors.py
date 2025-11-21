@@ -2,7 +2,7 @@
 Tests for type-safe color constants.
 """
 
-from tinty import (
+from pipetint import (
     BG_BLUE,
     BG_RED,
     BG_WHITE,
@@ -17,7 +17,7 @@ from tinty import (
     colored,
     txt,
 )
-from tinty.colors import ALL_COLORS, BACKGROUND_COLORS, FOREGROUND_COLORS, STYLES
+from pipetint.colors import ALL_COLORS, BACKGROUND_COLORS, FOREGROUND_COLORS, STYLES
 
 
 class TestColorConstants:
@@ -109,7 +109,7 @@ class TestColorConstants:
 
     def test_constants_with_legacy_api(self):
         """Test that constants work with legacy API too."""
-        from tinty import Colorize, ColorizedString
+        from pipetint import Colorize, ColorizedString
 
         colorizer = Colorize()
         result = colorizer.colorize("hello", RED)

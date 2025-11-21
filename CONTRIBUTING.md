@@ -8,8 +8,8 @@ Thank you for your interest in contributing to Tinty! This document provides gui
 
 ```bash
 # 1. Fork and clone
-git clone https://github.com/YOUR_USERNAME/tinty.git
-cd tinty
+git clone https://github.com/YOUR_USERNAME/pipetint.git
+cd pipetint
 
 # 2. Set up development environment
 poetry install --with dev
@@ -63,7 +63,7 @@ This project adheres to a Code of Conduct that we expect all contributors to fol
 ### Reporting Bugs
 
 Before submitting a bug report:
-- Check the [existing issues](https://github.com/jim-my/tinty/issues)
+- Check the [existing issues](https://github.com/jim-my/pipetint/issues)
 - Try the latest version from `main` branch
 - Collect information about your environment
 
@@ -81,7 +81,7 @@ A clear description of the bug.
 
 **To Reproduce**
 Steps to reproduce:
-1. Run command: `echo "test" | tinty 'pattern' red`
+1. Run command: `echo "test" | pipetint 'pattern' red`
 2. Observe output: ...
 3. Expected: ...
 
@@ -135,8 +135,8 @@ See the sections below for detailed guidelines on coding standards, testing, and
 
 ```bash
 # Clone the repository
-git clone https://github.com/jim-my/tinty.git
-cd tinty
+git clone https://github.com/jim-my/pipetint.git
+cd pipetint
 
 # Install with Poetry (recommended)
 poetry install --with dev
@@ -154,7 +154,7 @@ pre-commit install
 poetry run pytest
 
 # Run with coverage
-poetry run pytest --cov=tinty --cov-report=html --cov-report=term
+poetry run pytest --cov=pipetint --cov-report=html --cov-report=term
 
 # Run specific test file
 poetry run pytest tests/test_nesting.py
@@ -214,14 +214,14 @@ We follow modern Python best practices:
 ### Code Organization
 
 ```
-tinty/
-├── src/tinty/          # Main package
-│   ├── tinty.py       # Core colorization logic
+pipetint/
+├── src/pipetint/          # Main package
+│   ├── pipetint.py       # Core colorization logic
 │   ├── cli.py         # Command-line interface
 │   ├── colors.py      # Color constants
 │   └── enhanced.py    # Enhanced API
 ├── tests/             # Test suite
-│   ├── test_tinty.py
+│   ├── test_pipetint.py
 │   ├── test_nesting.py
 │   └── ...
 ├── examples/          # Example scripts
@@ -292,7 +292,7 @@ def highlight(
 """Tests for color nesting functionality."""
 
 import pytest
-from tinty import ColorizedString
+from pipetint import ColorizedString
 
 
 class TestColorNesting:
@@ -380,7 +380,7 @@ asdf
 ```
 feat(config): add YAML configuration file support
 
-Implement .tintyrc.yaml configuration file that allows users to save
+Implement .pipetintrc.yaml configuration file that allows users to save
 common color patterns and reuse them without retyping commands.
 
 Features:
@@ -471,8 +471,8 @@ Brief description of changes.
 
 ## 💬 Getting Help
 
-- **Questions**: Open a [GitHub Discussion](https://github.com/jim-my/tinty/discussions)
-- **Bugs**: Open a [GitHub Issue](https://github.com/jim-my/tinty/issues)
+- **Questions**: Open a [GitHub Discussion](https://github.com/jim-my/pipetint/discussions)
+- **Bugs**: Open a [GitHub Issue](https://github.com/jim-my/pipetint/issues)
 - **Chat**: Join our community (link TBD)
 
 ---

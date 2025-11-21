@@ -2,7 +2,7 @@
 Tests for color name normalization.
 """
 
-from tinty import ColorizedString
+from pipetint import ColorizedString
 
 
 class TestColorNormalization:
@@ -102,7 +102,7 @@ class TestColorManagerAliases:
 
     def test_bold_alias(self):
         """Test that 'bold' is an alias for 'bright'."""
-        from tinty.color_codes import ColorManager
+        from pipetint.color_codes import ColorManager
 
         cm = ColorManager()
         bold_code = cm.get_color_code("bold")
@@ -112,7 +112,7 @@ class TestColorManagerAliases:
 
     def test_red_bg_alias_in_color_manager(self):
         """Test that red_bg works directly in ColorManager."""
-        from tinty.color_codes import ColorManager
+        from pipetint.color_codes import ColorManager
 
         cm = ColorManager()
         red_bg_code = cm.get_color_code("red_bg")
@@ -122,7 +122,7 @@ class TestColorManagerAliases:
 
     def test_inverse_alias(self):
         """Test that 'inverse' is an alias for 'swapcolor'."""
-        from tinty.color_codes import ColorManager
+        from pipetint.color_codes import ColorManager
 
         cm = ColorManager()
         inverse_code = cm.get_color_code("inverse")
@@ -132,7 +132,7 @@ class TestColorManagerAliases:
 
     def test_reverse_alias(self):
         """Test that 'reverse' is an alias for 'swapcolor'."""
-        from tinty.color_codes import ColorManager
+        from pipetint.color_codes import ColorManager
 
         cm = ColorManager()
         reverse_code = cm.get_color_code("reverse")
@@ -142,7 +142,7 @@ class TestColorManagerAliases:
 
     def test_strike_alias(self):
         """Test that 'strike' is an alias for 'strikethrough'."""
-        from tinty.color_codes import ColorManager
+        from pipetint.color_codes import ColorManager
 
         cm = ColorManager()
         strike_code = cm.get_color_code("strike")
@@ -152,7 +152,7 @@ class TestColorManagerAliases:
 
     def test_all_background_colors_have_color_bg_alias(self):
         """Test that all bg_X colors also have X_bg aliases."""
-        from tinty.color_codes import ColorManager
+        from pipetint.color_codes import ColorManager
 
         cm = ColorManager()
         bg_colors = ["red", "green", "blue", "yellow", "magenta", "cyan", "black"]

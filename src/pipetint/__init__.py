@@ -1,11 +1,11 @@
 """
-Colorize - A Python library for terminal text colorization and highlighting.
+PipeTint - A Python library for terminal text colorization and highlighting.
 
 This library provides ANSI color code functionality for Python strings,
-similar to the Ruby colorize gem.
+designed for Unix pipeline usage and regex-based pattern highlighting.
 
 Enhanced API for production use:
-    from tinty import colored, C, ColorString
+    from pipetint import colored, C, ColorString
 
     # Fluent chaining
     colored("hello").red().bold()
@@ -18,7 +18,7 @@ Enhanced API for production use:
     C("hello").red().bold()
 
 Legacy API (still supported):
-    from tinty import Colorize, ColorizedString
+    from pipetint import Colorize, ColorizedString
 
     colorizer = Colorize()
     colored_text = colorizer.colorize("hello", RED)
@@ -29,7 +29,7 @@ Legacy API (still supported):
 # Note: string_extensions module removed - use enhanced API or core classes directly
 from importlib.metadata import version
 
-__version__ = version("tinty")
+__version__ = version("pipetint")
 from .color_codes import ColorCode, ColorManager, color_manager
 from .colors import *  # noqa: F403
 
