@@ -444,3 +444,83 @@ class TestNamedGroupsNestingDepth:
 
         color_code = match.group(1)
         assert color_code == "31"  # Red
+
+    def test_named_groups_inside_alternation(self):
+        """Test that named groups inside alternation get proper depth.
+
+        Pattern: (a|(?P<n>b)) has:
+        - Group 1 (outer): depth=1
+        - Named group 'n' inside alternation: depth=2
+
+        The bug was that BRANCH nodes weren't traversed, so the named group
+        was missing from the depth map entirely.
+        """
+        text = "b"
+        cs = ColorizedString(text)
+
+        # Check the depth calculation directly
+        depth_map = cs._calculate_group_nesting_depth(r"(a|(?P<n>b))")
+
+        # Group 0 is entire match
+        assert 0 in depth_map
+
+        # Group 1 is the outer group containing alternation
+        assert 1 in depth_map
+        assert depth_map[1] == 1
+
+        # Group 2 is the named group (?P<n>...) inside the alternation
+        # This was missing before the fix because BRANCH wasn't traversed
+        assert 2 in depth_map, (
+            f"Named group inside alternation missing from depth map. Got: {depth_map}"
+        )
+        expected_depth = 2
+        actual_depth = depth_map[2]
+        assert actual_depth == expected_depth, (
+            f"Expected depth={expected_depth} for nested group, got {actual_depth}"
+        )
+
+    def test_capture_groups_inside_lookahead(self):
+        """Test that capture groups inside lookahead get proper depth.
+
+        Pattern: (?=(foo)(bar)) has captures inside lookahead.
+        The lookahead itself doesn't capture, but groups inside it do.
+        """
+        text = "foobar"
+        cs = ColorizedString(text)
+
+        # Check the depth calculation directly
+        depth_map = cs._calculate_group_nesting_depth(r"(?=(foo)(bar))")
+
+        # Group 0 is entire match
+        assert 0 in depth_map
+
+        # Groups 1 and 2 are inside the lookahead
+        assert 1 in depth_map, f"Capture inside lookahead missing. Got: {depth_map}"
+        assert 2 in depth_map, f"Capture inside lookahead missing. Got: {depth_map}"
+
+    def test_nested_alternation_with_multiple_captures(self):
+        """Test complex pattern with nested alternations and captures."""
+        text = "abc"
+        cs = ColorizedString(text)
+
+        # Pattern: (a|(b|(?P<c>c)))
+        # Group 1: outer - depth=1
+        # Group 2: middle alternation - depth=2
+        # Group 3 (named 'c'): innermost - depth=3
+        depth_map = cs._calculate_group_nesting_depth(r"(a|(b|(?P<c>c)))")
+
+        assert depth_map.get(1) == 1, f"Outer group wrong depth: {depth_map}"
+        assert depth_map.get(2) == 2, f"Middle group wrong depth: {depth_map}"
+        assert depth_map.get(3) == 3, f"Inner named group wrong depth: {depth_map}"
+
+    def test_lookbehind_with_capture(self):
+        """Test capture groups in lookbehind assertions."""
+        text = "foobar"
+        cs = ColorizedString(text)
+
+        # Lookbehind with capture: (?<=(foo))bar
+        # Note: Python requires fixed-width lookbehinds, so use simple pattern
+        depth_map = cs._calculate_group_nesting_depth(r"(?<=(foo))bar")
+
+        # Group 1 is inside lookbehind
+        assert 1 in depth_map, f"Capture inside lookbehind missing. Got: {depth_map}"

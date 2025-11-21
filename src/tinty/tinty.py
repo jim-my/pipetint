@@ -539,58 +539,81 @@ class ColorizedString(str):
 
         # Constants for sre_parse structure
         OP_AV_TUPLE_LEN = 2  # Each parsed item is (op, av) tuple
+        BRANCH_AV_TUPLE_LEN = 2  # BRANCH av: (None, [branches])
+        ASSERT_AV_TUPLE_LEN = 2  # ASSERT av: (direction, content)
         SUBPATTERN_TUPLE_LEN_FULL = (
             4  # Full structure: (group_num, add_flags, del_flags, content)
         )
         SUBPATTERN_TUPLE_LEN_MIN = 2  # Minimum: (group_num, content)
 
+        def extract_data(obj):
+            """Extract data attribute from SubPattern object if present."""
+            return obj.data if hasattr(obj, "data") else obj
+
+        def handle_subpattern(av, current_depth: int) -> None:
+            """Handle SUBPATTERN node."""
+            if not isinstance(av, tuple):
+                return
+
+            # Handle different tuple structures (Python version dependent)
+            if len(av) >= SUBPATTERN_TUPLE_LEN_FULL:
+                group_num = av[0]
+                parsed_content = av[3]
+            elif len(av) >= SUBPATTERN_TUPLE_LEN_MIN:
+                group_num = av[0]
+                parsed_content = av[1] if isinstance(av[1], list) else av[-1]
+            else:
+                return
+
+            parsed_content = extract_data(parsed_content)
+
+            if group_num is not None:
+                # Capturing group (includes named groups)
+                depth_map[group_num] = current_depth + 1
+                if isinstance(parsed_content, list):
+                    traverse(parsed_content, current_depth + 1)
+            elif isinstance(parsed_content, list):
+                # Non-capturing group - maintain depth for nested groups
+                traverse(parsed_content, current_depth + 1)
+
+        def handle_branch(av, current_depth: int) -> None:
+            """Handle BRANCH node (alternation |)."""
+            if not isinstance(av, tuple) or len(av) < BRANCH_AV_TUPLE_LEN:
+                return
+            branches = av[1]
+            if not isinstance(branches, list):
+                return
+            for branch_item in branches:
+                branch_data = extract_data(branch_item)
+                if isinstance(branch_data, list):
+                    traverse(branch_data, current_depth)
+
+        def handle_assert(av, current_depth: int) -> None:
+            """Handle ASSERT/ASSERT_NOT node (lookahead/behind)."""
+            if not isinstance(av, tuple) or len(av) < ASSERT_AV_TUPLE_LEN:
+                return
+            parsed_content = extract_data(av[1])
+            if isinstance(parsed_content, list):
+                traverse(parsed_content, current_depth)
+
         def traverse(items, current_depth: int) -> None:
             """Recursively traverse the regex AST to calculate nesting depths."""
-            # items can be a list of (op, av) tuples or other structures
             if not isinstance(items, list):
                 return
 
             for item in items:
-                # Each item should be a tuple of (op, av)
                 if not isinstance(item, tuple) or len(item) != OP_AV_TUPLE_LEN:
                     continue
 
                 op, av = item
 
                 if op == sre_parse.SUBPATTERN:
-                    # av structure: (group_num, add_flags, del_flags, parsed_content)
-                    if not isinstance(av, tuple):
-                        continue
-
-                    # Handle different tuple structures (Python version dependent)
-                    if len(av) >= SUBPATTERN_TUPLE_LEN_FULL:
-                        group_num = av[0]
-                        parsed_content = av[3]
-                    elif len(av) >= SUBPATTERN_TUPLE_LEN_MIN:
-                        group_num = av[0]
-                        parsed_content = av[1] if isinstance(av[1], list) else av[-1]
-                    else:
-                        continue
-
-                    # Extract data attribute if it's a SubPattern object
-                    if hasattr(parsed_content, "data"):
-                        parsed_content = parsed_content.data
-
-                    if group_num is not None:
-                        # This is a capturing group (includes named groups)
-                        # Group numbers start at 1
-                        depth_map[group_num] = current_depth + 1
-                        # Recurse into the subpattern with increased depth
-                        if isinstance(parsed_content, list):
-                            traverse(parsed_content, current_depth + 1)
-                    # Non-capturing group, lookahead, lookbehind, etc.
-                    # Don't increment group number, but maintain depth for nested groups
-                    elif isinstance(parsed_content, list):
-                        traverse(parsed_content, current_depth + 1)
-                # For other operations, check if av contains nested structures
+                    handle_subpattern(av, current_depth)
+                elif op == sre_parse.BRANCH:
+                    handle_branch(av, current_depth)
+                elif op in {sre_parse.ASSERT, sre_parse.ASSERT_NOT}:
+                    handle_assert(av, current_depth)
                 elif isinstance(av, list):
-                    # Recurse into list structures at same depth
-                    # (these are not grouping constructs)
                     traverse(av, current_depth)
 
         traverse(items_to_traverse, 0)
