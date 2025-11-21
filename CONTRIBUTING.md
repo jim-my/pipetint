@@ -1,6 +1,6 @@
-# Contributing to Tinty
+# Contributing to PipeTint
 
-Thank you for your interest in contributing to Tinty! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to PipeTint! This document provides guidelines and instructions for contributing.
 
 ---
 
@@ -88,7 +88,7 @@ Steps to reproduce:
 **Environment**
 - OS: macOS 14.0
 - Python: 3.11.5
-- Tinty: 1.0.0
+- PipeTint: 1.0.0
 - Terminal: iTerm2 3.4.19
 
 **Additional Context**
@@ -100,7 +100,7 @@ Any other relevant information.
 Feature suggestions are welcome! Before submitting:
 - Check the [roadmap](ROADMAP.md) for planned features
 - Search existing feature requests
-- Consider if it fits Tinty's philosophy (simplicity, zero dependencies, Unix philosophy)
+- Consider if it fits PipeTint's philosophy (simplicity, zero dependencies, Unix philosophy)
 
 **Good feature requests include**:
 - Clear use case and motivation
@@ -492,4 +492,4 @@ By contributing, you agree that your contributions will be licensed under the MI
 
 ---
 
-**Thank you for contributing to Tinty! 🎨**
+**Thank you for contributing to PipeTint! 🎨**

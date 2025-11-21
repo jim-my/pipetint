@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### 🎉 First Stable Release
 
-This release marks Tinty as production-ready with a stable API and unique features not found in any other terminal colorizer.
+This release marks PipeTint as production-ready with a stable API and unique features not found in any other terminal colorizer.
 
 ### ✨ Unique Features
 

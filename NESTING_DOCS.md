@@ -19,7 +19,7 @@ Add after "Pattern Highlighting" section:
 ```markdown
 ## 🎨 Advanced: Color Nesting & Priority
 
-Tinty intelligently handles overlapping colors with automatic priority resolution:
+PipeTint intelligently handles overlapping colors with automatic priority resolution:
 
 ### Nested Regex Groups
 

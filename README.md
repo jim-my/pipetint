@@ -1,4 +1,4 @@
-# Tinty
+# PipeTint
 
 > **The only terminal colorizer with smart color nesting and pipeline composition.**
 
@@ -15,7 +15,7 @@ Python library and CLI tool for terminal text colorization with **automatic prio
 ## 📖 Quick Navigation
 
 - [⚡ Quick Start](#-quick-start) - Get started in 30 seconds
-- [🎨 What Makes Tinty Unique](#-what-makes-pipetint-unique) - Smart nesting, pipelines, channel isolation
+- [🎨 What Makes PipeTint Unique](#-what-makes-pipetint-unique) - Smart nesting, pipelines, channel isolation
 - [💡 Real-World Examples](#-real-world-examples) - Log highlighting, syntax highlighting
 - [📋 Full Documentation](#-full-documentation) - Complete API reference
 - [🚀 Installation](#-installation)
@@ -43,7 +43,7 @@ print(colored("Error") | RED | BOLD)
 
 ---
 
-## 🎨 What Makes Tinty Unique
+## 🎨 What Makes PipeTint Unique
 
 ### 1. 🧠 **Smart Color Nesting** (No other tool has this!)
 
@@ -474,4 +474,4 @@ This project uses automated versioning via git tags:
 
 ---
 
-**Made with ❤️ by the Tinty community**
+**Made with ❤️ by the PipeTint community**

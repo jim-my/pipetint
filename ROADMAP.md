@@ -1,12 +1,12 @@
 # Roadmap
 
-This document outlines the planned features and future direction for Tinty.
+This document outlines the planned features and future direction for PipeTint.
 
 ---
 
 ## 🎯 Vision
 
-Tinty aims to be the **most powerful and user-friendly terminal colorizer** with unique features like smart color nesting and pipeline composition, while maintaining simplicity and zero dependencies.
+PipeTint aims to be the **most powerful and user-friendly terminal colorizer** with unique features like smart color nesting and pipeline composition, while maintaining simplicity and zero dependencies.
 
 ---
 
