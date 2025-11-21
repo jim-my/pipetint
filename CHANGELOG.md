@@ -125,9 +125,9 @@ With v1.0.0, we commit to:
 
 ---
 
-[1.0.0]: https://github.com/jim-my/tinty/compare/v0.2.0...v1.0.0
-[0.2.0]: https://github.com/jim-my/tinty/compare/v0.1.10...v0.2.0
-[0.1.10]: https://github.com/jim-my/tinty/compare/v0.1.9...v0.1.10
-[0.1.9]: https://github.com/jim-my/tinty/compare/v0.1.4...v0.1.9
-[0.1.4]: https://github.com/jim-my/tinty/compare/v0.1.3...v0.1.4
-[0.1.3]: https://github.com/jim-my/tinty/releases/tag/v0.1.3
+[1.0.0]: https://github.com/jim-my/pipetint/compare/v0.2.0...v1.0.0
+[0.2.0]: https://github.com/jim-my/pipetint/compare/v0.1.10...v0.2.0
+[0.1.10]: https://github.com/jim-my/pipetint/compare/v0.1.9...v0.1.10
+[0.1.9]: https://github.com/jim-my/pipetint/compare/v0.1.4...v0.1.9
+[0.1.4]: https://github.com/jim-my/pipetint/compare/v0.1.3...v0.1.4
+[0.1.3]: https://github.com/jim-my/pipetint/releases/tag/v0.1.3

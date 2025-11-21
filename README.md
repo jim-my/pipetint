@@ -2,8 +2,8 @@
 
 > **The only terminal colorizer with smart color nesting and pipeline composition.**
 
-[![CI](https://github.com/jim-my/colorize/workflows/CI/badge.svg)](https://github.com/jim-my/colorize/actions)
-[![codecov](https://codecov.io/gh/jim-my/colorize/branch/main/graph/badge.svg)](https://codecov.io/gh/jim-my/colorize)
+[![CI](https://github.com/jim-my/pipetint/workflows/CI/badge.svg)](https://github.com/jim-my/pipetint/actions)
+[![codecov](https://codecov.io/gh/jim-my/pipetint/branch/main/graph/badge.svg)](https://codecov.io/gh/jim-my/pipetint)
 [![PyPI version](https://badge.fury.io/py/pipetint.svg)](https://badge.fury.io/py/pipetint)
 [![Python versions](https://img.shields.io/pypi/pyversions/pipetint.svg)](https://pypi.org/project/pipetint)
 [![Production Ready](https://img.shields.io/badge/status-production%20ready-brightgreen.svg)](https://github.com/jim-my/pipetint)
