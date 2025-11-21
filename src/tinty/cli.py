@@ -36,7 +36,8 @@ Examples:
         nargs="*",
         default=["black,bg_yellow,swapcolor"],
         metavar="COLORS",
-        help="Color names to apply to matched groups (default: black,bg_yellow,swapcolor)",
+        help="Colors for each capture group. Use commas to combine multiple colors "
+        "for one group (e.g., red,bold). Default: black,bg_yellow,swapcolor",
     )
 
     parser.add_argument(
