@@ -5,6 +5,69 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.1] - 2025-01-22
+
+### Documentation
+
+- Fixed remaining capitalized Tinty → PipeTint references in README and documentation
+- Updated all GitHub repository URLs from jim-my/tinty to jim-my/pipetint
+- Updated CHANGELOG comparison URLs to point to pipetint repository
+- Updated README badges to point to pipetint repository
+
+---
+
+## [2.0.0] - 2025-01-22
+
+### 💥 BREAKING CHANGES
+
+This release renames the package from "tinty" to "pipetint" to avoid conflicts with existing projects and better reflect the tool's purpose.
+
+**Migration Guide:**
+
+1. **Uninstall old package:**
+   ```bash
+   pip uninstall tinty
+   ```
+
+2. **Install new package:**
+   ```bash
+   pip install pipetint
+   ```
+
+3. **Update imports:**
+   ```python
+   # Old
+   from tinty import ColorizedString, colored
+
+   # New
+   from pipetint import ColorizedString, colored
+   ```
+
+4. **Update CLI usage:**
+   ```bash
+   # Old
+   echo "test" | tinty 'pattern' red
+
+   # New
+   echo "test" | pipetint 'pattern' red
+   ```
+
+5. **Update git remote (for contributors):**
+   ```bash
+   git remote set-url origin git@github.com:jim-my/pipetint.git
+   ```
+
+### Changed
+
+- Package renamed from `tinty` to `pipetint`
+- CLI command renamed from `tinty` to `pipetint`
+- GitHub repository renamed to `jim-my/pipetint`
+- All imports changed from `from tinty` to `from pipetint`
+
+**Note:** All functionality remains identical - this is purely a naming change.
+
+---
+
 ## [1.0.0] - 2025-01-20
 
 ### 🎉 First Stable Release
@@ -125,6 +188,8 @@ With v1.0.0, we commit to:
 
 ---
 
+[2.0.1]: https://github.com/jim-my/pipetint/compare/v2.0.0...v2.0.1
+[2.0.0]: https://github.com/jim-my/pipetint/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/jim-my/pipetint/compare/v0.2.0...v1.0.0
 [0.2.0]: https://github.com/jim-my/pipetint/compare/v0.1.10...v0.2.0
 [0.1.10]: https://github.com/jim-my/pipetint/compare/v0.1.9...v0.1.10
