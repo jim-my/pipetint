@@ -117,8 +117,10 @@ def process_line(
             raw_sequences=[],
         )
 
-    # Apply colors layer by layer
-    # Each "layer" takes the nth color from each group
+    # Apply colors layer by layer across all groups
+    # Each layer takes the nth color from each group
+    # Inner groups have higher nesting priority within each layer
+    # Empty colors are skipped in highlight() so they don't override
     max_colors = max((len(g) for g in color_groups), default=0)
     result = colored_str
     for layer in range(max_colors):
@@ -127,7 +129,6 @@ def process_line(
             if layer < len(group_colors):
                 layer_colors.append(group_colors[layer])
             else:
-                # No more colors for this group, use empty string to skip
                 layer_colors.append("")
         result = result.highlight(pattern, layer_colors)
 
