@@ -3,9 +3,16 @@ Core colorization functionality with deferred rendering and proper color nesting
 """
 
 import re
-import sre_parse
+import warnings
 from dataclasses import dataclass
-from typing import Optional, Union
+from typing import Any, Optional, Union
+
+# sre_parse is deprecated in Python 3.11+ but no stable public alternative exists.
+# We suppress the warning since this is the only way to properly parse regex AST.
+# Future migration path: consider third-party regex parsing library if needed.
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    import sre_parse
 
 from .color_codes import ColorCode, ColorManager, color_manager
 
@@ -533,8 +540,9 @@ class ColorizedString(str):
                 if hasattr(parsed_pattern, "data")
                 else parsed_pattern
             )
-        except Exception:
-            # If parsing fails, fall back to simple depth tracking
+        except (re.error, ValueError, TypeError, AttributeError):
+            # If parsing fails due to invalid regex or unexpected structure,
+            # fall back to simple depth tracking (group 0 only)
             return depth_map
 
         # Constants for sre_parse structure
@@ -546,11 +554,11 @@ class ColorizedString(str):
         )
         SUBPATTERN_TUPLE_LEN_MIN = 2  # Minimum: (group_num, content)
 
-        def extract_data(obj):
+        def extract_data(obj: Any) -> Any:
             """Extract data attribute from SubPattern object if present."""
             return obj.data if hasattr(obj, "data") else obj
 
-        def handle_subpattern(av, current_depth: int) -> None:
+        def handle_subpattern(av: Any, current_depth: int) -> None:
             """Handle SUBPATTERN node."""
             if not isinstance(av, tuple):
                 return
@@ -576,7 +584,7 @@ class ColorizedString(str):
                 # Non-capturing group - maintain depth for nested groups
                 traverse(parsed_content, current_depth + 1)
 
-        def handle_branch(av, current_depth: int) -> None:
+        def handle_branch(av: Any, current_depth: int) -> None:
             """Handle BRANCH node (alternation |)."""
             if not isinstance(av, tuple) or len(av) < BRANCH_AV_TUPLE_LEN:
                 return
@@ -588,7 +596,7 @@ class ColorizedString(str):
                 if isinstance(branch_data, list):
                     traverse(branch_data, current_depth)
 
-        def handle_assert(av, current_depth: int) -> None:
+        def handle_assert(av: Any, current_depth: int) -> None:
             """Handle ASSERT/ASSERT_NOT node (lookahead/behind)."""
             if not isinstance(av, tuple) or len(av) < ASSERT_AV_TUPLE_LEN:
                 return
@@ -596,7 +604,7 @@ class ColorizedString(str):
             if isinstance(parsed_content, list):
                 traverse(parsed_content, current_depth)
 
-        def traverse(items, current_depth: int) -> None:
+        def traverse(items: Any, current_depth: int) -> None:
             """Recursively traverse the regex AST to calculate nesting depths."""
             if not isinstance(items, list):
                 return
@@ -613,6 +621,8 @@ class ColorizedString(str):
                     handle_branch(av, current_depth)
                 elif op in {sre_parse.ASSERT, sre_parse.ASSERT_NOT}:
                     handle_assert(av, current_depth)
+                # Note: ATOMIC_GROUP (?>...) in Python 3.11+ is handled by
+                # the isinstance(av, list) fallback since it doesn't capture
                 elif isinstance(av, list):
                     traverse(av, current_depth)
 
