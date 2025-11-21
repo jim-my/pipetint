@@ -434,12 +434,20 @@ class TestPriorityOverflow:
 
         # Create >1000 REAL ColorRanges by using patterns that actually match
         # Each highlight increments _next_priority
-        for _ in range(1050):
+        # Use 1001 iterations (just past overflow threshold of 1000)
+        overflow_threshold = 1001
+        for _ in range(overflow_threshold):
             cs = cs.highlight(r"a", ["green"])  # depth=1, matches 'a'
 
-        # Now _next_priority is 1050
+        # Verify the loop created ranges - 'a' should be green (32)
+        result_after_loop = str(cs)
+        assert "\033[32m" in result_after_loop, (
+            "Loop should have created green ranges for 'a'"
+        )
 
-        # Apply a depth=1 color to 'b' (application_order = 1050)
+        # Now _next_priority is 1001 (past the overflow threshold)
+
+        # Apply a depth=1 color to 'b' (application_order = 1001)
         cs = cs.highlight(r"(b)", ["blue"])  # depth=1 for group 1
 
         # Apply a depth=2 color (nested group) to same 'b' position
@@ -455,7 +463,7 @@ class TestPriorityOverflow:
         # - red at depth=2 (from inner group)
         #
         # With tuple priority, depth=2 (red) should always win over depth=1
-        # Even though blue was applied earlier with order=1050, red's depth=2
+        # Even though blue was applied earlier with order=1001, red's depth=2
         # takes precedence
 
         # Red (31) should be present for the 'b' character
