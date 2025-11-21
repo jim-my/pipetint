@@ -396,27 +396,43 @@ class TestCLIIntegration:
                         assert "Replace all: True" in stderr_output
                         assert "cleared previous colors" in stderr_output
 
-    def test_cli_unbuffered_flag(self):
-        """Test --unbuffered flag for line-buffered output."""
-        from tinty import ColorizedString
+    def test_cli_unbuffered_flag_calls_reconfigure(self):
+        """Test --unbuffered flag enables line-buffered output via reconfigure."""
+        test_input = "hello\n"
 
-        test_input = "hello world\ntest line\n"
+        # Create a mock stdout with reconfigure method
+        mock_stdout = MagicMock()
+        mock_stdout.write = MagicMock()
 
-        # Test with -u short form
         with patch("sys.argv", ["tinty", "-u", "l", "red"]):
             with patch("sys.stdin", io.StringIO(test_input)):
-                with patch("sys.stdout", io.StringIO()) as mock_stdout:
+                with patch("sys.stdout", mock_stdout):
                     main()
 
-                    output = mock_stdout.getvalue()
+                    # Verify reconfigure was called with line_buffering=True
+                    mock_stdout.reconfigure.assert_called_once_with(line_buffering=True)
 
-                    # Should colorize 'l' characters
-                    assert "\033[31m" in output
-                    cleaned = ColorizedString(output).remove_color()
-                    assert "hello world" in cleaned
-                    assert "test line" in cleaned
+    def test_cli_without_unbuffered_no_reconfigure(self):
+        """Test that without --unbuffered, reconfigure is not called."""
+        test_input = "hello\n"
 
-        # Test with --unbuffered long form
+        mock_stdout = MagicMock()
+        mock_stdout.write = MagicMock()
+
+        with patch("sys.argv", ["tinty", "l", "red"]):
+            with patch("sys.stdin", io.StringIO(test_input)):
+                with patch("sys.stdout", mock_stdout):
+                    main()
+
+                    # Verify reconfigure was NOT called
+                    mock_stdout.reconfigure.assert_not_called()
+
+    def test_cli_unbuffered_flag_output(self):
+        """Test --unbuffered flag still produces correct colorized output."""
+        from tinty import ColorizedString
+
+        test_input = "hello world\n"
+
         with patch("sys.argv", ["tinty", "--unbuffered", "l", "red"]):
             with patch("sys.stdin", io.StringIO(test_input)):
                 with patch("sys.stdout", io.StringIO()) as mock_stdout:
@@ -428,4 +444,3 @@ class TestCLIIntegration:
                     assert "\033[31m" in output
                     cleaned = ColorizedString(output).remove_color()
                     assert "hello world" in cleaned
-                    assert "test line" in cleaned
