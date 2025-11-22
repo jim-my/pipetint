@@ -168,6 +168,8 @@ class TestMain:
                         pattern="(.*)",
                         colors=["black,bg_yellow,swapcolor"],
                         list_colors=False,
+                        remove_color=False,  # New attribute for color removal feature
+                        output_format="ansi",  # New attribute for output format feature
                     )
 
                     main()
