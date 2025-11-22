@@ -231,6 +231,30 @@ echo "hello world" | pipetint 'hello' red | pipetint --replace-all 'world' blue
 # Result: Only "world" is blue, "hello" has no color
 ```
 
+#### Color Removal & Output Formats
+
+Strip ANSI color codes or convert to different formats:
+
+```bash
+# Remove all colors (strip ANSI codes)
+cat colored.log | pipetint --remove-color > clean.log
+
+# Same using --output-format
+cat colored.log | pipetint --output-format=plain > clean.log
+
+# Convert colored output to HTML (with inline styles)
+echo "ERROR: Failed" | pipetint 'ERROR' red --output-format=html > output.html
+
+# Pipeline: colorize then strip colors for data processing
+cat app.log | pipetint 'ERROR' red | grep ERROR | pipetint --remove-color | wc -l
+```
+
+**Use Cases:**
+- Extract plain text from colored terminal output
+- Process logs without ANSI codes interfering
+- Convert terminal colors to HTML for web display
+- Clean up output before saving to files
+
 ### Python Library API
 
 #### Type-Safe Constants (Recommended)
@@ -275,6 +299,30 @@ print(result)
 ```
 
 ![Pattern Highlighting](docs/images/pattern-highlighting.png)
+
+#### Color Removal
+
+Remove ANSI color codes from text:
+
+```python
+from pipetint import Colorize, ColorizedString
+
+# Method 1: Using Colorize
+colorizer = Colorize()
+colored_text = "\033[31mERROR\033[0m: Connection failed"
+clean_text = colorizer.remove_color(colored_text)
+print(clean_text)  # "ERROR: Connection failed"
+
+# Method 2: Using ColorizedString
+cs = ColorizedString("\033[31mERROR\033[0m: Connection failed")
+clean = cs.remove_color()
+print(str(clean))  # "ERROR: Connection failed"
+
+# Useful for processing colored output
+log_line = ColorizedString("...").highlight(r'ERROR', ['red'])
+# Later, extract plain text for analysis
+plain_text = str(log_line.remove_color())
+```
 
 ### Available Colors and Styles
 
