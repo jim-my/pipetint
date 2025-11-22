@@ -9,64 +9,76 @@ from .core import Colorize, ColorizedString
 
 
 def _create_help_examples() -> str:
-    """Create colorized examples for CLI help."""
-    # Example 1: Simple highlighting
-    ex1 = ColorizedString("ERROR: Connection failed").highlight(r"ERROR", ["red"])
+    """Create examples for CLI help.
 
-    # Example 2: Success highlighting
-    ex2 = ColorizedString("SUCCESS: Task completed").highlight(r"SUCCESS", ["green"])
-
-    # Example 3: Nested groups showing priority
-    ex3 = ColorizedString("hello world").highlight(r"(h.(ll))", ["red", "blue"])
-
-    # Example 4: Background colors
-    ex4_tmp = ColorizedString("WARN: Check logs").highlight(r"WARN", ["black"])
-    ex4 = ex4_tmp.highlight(r"WARN", ["bg_yellow"])
-
-    # Example 5: Multiple capture groups (log parsing)
-    ex5 = ColorizedString(
-        "2024-01-15 ERROR: Connection timeout at server.py:42"
-    ).highlight(
-        r"(\d{4}-\d{2}-\d{2}).*?(ERROR|WARN|INFO).*?([a-z_]+\.py:\d+)",
-        ["cyan", "red", "yellow"],
-    )
-
-    # Example 6: Pipeline composition
-    ex6_tmp1 = ColorizedString("ERROR: Connection failed at 10:30:45").highlight(
-        r"ERROR", ["red"]
-    )
-    ex6_tmp2 = ex6_tmp1.highlight(r"ERROR", ["bold"])
-    ex6 = ex6_tmp2.highlight(r"\d{2}:\d{2}:\d{2}", ["blue"])
+    Returns colored examples if stdout is a TTY, plain text otherwise.
+    This ensures help is readable when piped or on systems without ANSI support.
+    """
+    # Check if stdout is a TTY - only show colors in interactive terminals
+    if sys.stdout.isatty():
+        # Colored examples for interactive terminals
+        ex1_out = str(
+            ColorizedString("ERROR: Connection failed").highlight(r"ERROR", ["red"])
+        )
+        ex2_out = str(
+            ColorizedString("SUCCESS: Task completed").highlight(r"SUCCESS", ["green"])
+        )
+        ex3_out = str(
+            ColorizedString("hello world").highlight(r"(h.(ll))", ["red", "blue"])
+        )
+        ex4_tmp = ColorizedString("WARN: Check logs").highlight(r"WARN", ["black"])
+        ex4_out = str(ex4_tmp.highlight(r"WARN", ["bg_yellow"]))
+        ex5_out = str(
+            ColorizedString(
+                "2024-01-15 ERROR: Connection timeout at server.py:42"
+            ).highlight(
+                r"(\d{4}-\d{2}-\d{2}).*?(ERROR|WARN|INFO).*?([a-z_]+\.py:\d+)",
+                ["cyan", "red", "yellow"],
+            )
+        )
+        ex6_tmp1 = ColorizedString("ERROR: Connection failed at 10:30:45").highlight(
+            r"ERROR", ["red"]
+        )
+        ex6_tmp2 = ex6_tmp1.highlight(r"ERROR", ["bold"])
+        ex6_out = str(ex6_tmp2.highlight(r"\d{2}:\d{2}:\d{2}", ["blue"]))
+    else:
+        # Plain text examples for non-TTY (piped output, CI, Windows cmd)
+        ex1_out = "ERROR: Connection failed"
+        ex2_out = "SUCCESS: Task completed"
+        ex3_out = "hello world"
+        ex4_out = "WARN: Check logs"
+        ex5_out = "2024-01-15 ERROR: Connection timeout at server.py:42"
+        ex6_out = "ERROR: Connection failed at 10:30:45"
 
     return f"""
 Examples:
   # Highlight errors in red
   $ echo "ERROR: Connection failed" | pipetint 'ERROR' red
-  {ex1}
+  {ex1_out}
 
   # Highlight success in green
   $ echo "SUCCESS: Task completed" | pipetint 'SUCCESS' green
-  {ex2}
+  {ex2_out}
 
   # Nested groups - inner color wins
   $ echo "hello world" | pipetint '(h.(ll))' red,blue
-  {ex3}
+  {ex3_out}
 
   # Background + foreground
   $ echo "WARN: Check logs" | pipetint 'WARN' black,bg_yellow
-  {ex4}
+  {ex4_out}
 
   # Multiple patterns - log parsing with 3 groups (date, level, location)
   $ echo "2024-01-15 ERROR: Connection timeout at server.py:42" | \\
       pipetint '(\\d{{4}}-\\d{{2}}-\\d{{2}}).*?(ERROR|WARN|INFO).*?([a-z_]+\\.py:\\d+)' \\
       cyan red yellow
-  {ex5}
+  {ex5_out}
 
   # Pipeline composition - colors preserved across stages
   $ echo "ERROR: Connection failed at 10:30:45" | \\
       pipetint 'ERROR' red,bold | \\
       pipetint '\\d{{2}}:\\d{{2}}:\\d{{2}}' blue
-  {ex6}
+  {ex6_out}
 
   # List all available colors
   $ pipetint --list-colors
@@ -130,6 +142,51 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _display_foreground_colors(foreground: list[str]) -> None:
+    """Display foreground colors with colored blocks."""
+    section_title = ColorizedString("Foreground Colors").colorize("bold")
+    print(section_title)
+    print("-" * 60)
+    for name in foreground:
+        # Show colored block and the text "This is <color>"
+        block = ColorizedString("████").colorize(name)
+        demo_text = ColorizedString(f"This is {name}").colorize(name)
+        print(f"  {block}  {demo_text}")
+    print()
+
+
+def _display_background_colors(background: list[str]) -> None:
+    """Display background colors with colored blocks."""
+    section_title = ColorizedString("Background Colors").colorize("bold")
+    print(section_title)
+    print("-" * 60)
+    for name in background:
+        # Show background colored block with black text
+        block_tmp = ColorizedString("████").colorize(name)
+        block = block_tmp.colorize("black")
+        # Show text with background
+        demo_tmp = ColorizedString(f"This is {name}").colorize(name)
+        demo_text = demo_tmp.colorize("black")
+        print(f"  {block}  {demo_text}")
+    print()
+
+
+def _display_text_styles(styles: list[str]) -> None:
+    """Display text styles with demonstrations."""
+    section_title = ColorizedString("Text Styles").colorize("bold")
+    print(section_title)
+    print("-" * 60)
+    for name in styles:
+        # Special handling for hidden - show description instead of invisible text
+        if name == "hidden":
+            print(f"  This is {name} (text hidden in terminal)")
+        else:
+            # Show the style applied to sample text
+            demo = ColorizedString(f"This is {name}").colorize(name)
+            print(f"  {demo}")
+    print()
+
+
 def list_colors():
     """List all available colors with visual demonstrations."""
     colorizer = Colorize()
@@ -148,8 +205,9 @@ def list_colors():
     styles = []
 
     # Define text style names as a set for efficient lookup
+    # Includes primary style names and all their aliases
     text_styles = {
-        "bold",
+        # Primary style names
         "bright",
         "dim",
         "underline",
@@ -158,6 +216,12 @@ def list_colors():
         "swapcolor",
         "hidden",
         "strikethrough",
+        # Style aliases
+        "bold",  # alias for bright
+        "inverse",  # alias for invert
+        "reverse",  # alias for invert
+        "swap",  # alias for swapcolor
+        "strike",  # alias for strikethrough
     }
 
     for name in sorted(color_map.keys()):
@@ -172,43 +236,15 @@ def list_colors():
         else:
             foreground.append(name)
 
-    # Display foreground colors with color blocks
+    # Display sections
     if foreground:
-        section_title = ColorizedString("Foreground Colors").colorize("bold")
-        print(section_title)
-        print("-" * 60)
-        for name in foreground:
-            # Show colored block and the text "This is <color>"
-            block = ColorizedString("████").colorize(name)
-            demo_text = ColorizedString(f"This is {name}").colorize(name)
-            print(f"  {block}  {demo_text}")
-        print()
+        _display_foreground_colors(foreground)
 
-    # Display background colors with colored blocks
     if background:
-        section_title = ColorizedString("Background Colors").colorize("bold")
-        print(section_title)
-        print("-" * 60)
-        for name in background:
-            # Show background colored block with black text
-            block_tmp = ColorizedString("████").colorize(name)
-            block = block_tmp.colorize("black")
-            # Show text with background
-            demo_tmp = ColorizedString(f"This is {name}").colorize(name)
-            demo_text = demo_tmp.colorize("black")
-            print(f"  {block}  {demo_text}")
-        print()
+        _display_background_colors(background)
 
-    # Display text styles
     if styles:
-        section_title = ColorizedString("Text Styles").colorize("bold")
-        print(section_title)
-        print("-" * 60)
-        for name in styles:
-            # Show the style applied to sample text
-            demo = ColorizedString(f"This is {name}").colorize(name)
-            print(f"  {demo}")
-        print()
+        _display_text_styles(styles)
 
     # Footer with usage hint
     print("=" * 60)
