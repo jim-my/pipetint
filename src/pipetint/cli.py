@@ -2,10 +2,103 @@
 
 import argparse
 import contextlib
+import html
 import re
 import sys
 
 from .core import Colorize, ColorizedString
+
+
+def ansi_to_html(text: str) -> str:
+    """Convert ANSI color codes to HTML with inline styles.
+
+    Properly handles reset codes and multiple colored segments.
+    Escapes HTML special characters to prevent XSS vulnerabilities.
+
+    Args:
+        text: Text with ANSI color codes
+
+    Returns:
+        HTML string with <span> tags and inline styles
+    """
+    # Map ANSI codes to CSS
+    color_map = {
+        "30": "color:#000",
+        "31": "color:#c00",
+        "32": "color:#0c0",
+        "33": "color:#cc0",
+        "34": "color:#00c",
+        "35": "color:#c0c",
+        "36": "color:#0cc",
+        "37": "color:#ccc",
+        "90": "color:#888",
+        "91": "color:#f00",
+        "92": "color:#0f0",
+        "93": "color:#ff0",
+        "94": "color:#00f",
+        "95": "color:#f0f",
+        "96": "color:#0ff",
+        "97": "color:#fff",
+        "40": "background-color:#000",
+        "41": "background-color:#c00",
+        "42": "background-color:#0c0",
+        "43": "background-color:#cc0",
+        "44": "background-color:#00c",
+        "45": "background-color:#c0c",
+        "46": "background-color:#0cc",
+        "47": "background-color:#ccc",
+        "100": "background-color:#888",
+        "101": "background-color:#f00",
+        "102": "background-color:#0f0",
+        "103": "background-color:#ff0",
+        "104": "background-color:#00f",
+        "105": "background-color:#f0f",
+        "106": "background-color:#0ff",
+        "107": "background-color:#fff",
+        "1": "font-weight:bold",
+        "4": "text-decoration:underline",
+    }
+
+    # Parse ANSI codes and convert to HTML spans
+    result: list[str] = []
+    current_styles: list[str] = []
+    pos = 0
+
+    for match in re.finditer(r"\x1b\[([0-9;]+)m", text):
+        # Add any text before this escape code
+        if match.start() > pos:
+            plain_text = text[pos : match.start()]
+            escaped_text = html.escape(plain_text).replace("\n", "<br>")
+            if current_styles:
+                result.append(
+                    f'<span style="{";".join(current_styles)}">{escaped_text}</span>'
+                )
+            else:
+                result.append(escaped_text)
+
+        # Parse escape code and update styles
+        codes = match.group(1).split(";")
+        if "0" in codes:  # Reset
+            current_styles = []
+        else:
+            for code in codes:
+                if code in color_map:
+                    current_styles.append(color_map[code])
+
+        pos = match.end()
+
+    # Add any remaining text after the last escape code
+    if pos < len(text):
+        plain_text = text[pos:]
+        escaped_text = html.escape(plain_text).replace("\n", "<br>")
+        if current_styles:
+            result.append(
+                f'<span style="{";".join(current_styles)}">{escaped_text}</span>'
+            )
+        else:
+            result.append(escaped_text)
+
+    return "".join(result)
 
 
 def _create_help_examples() -> str:
@@ -90,7 +183,9 @@ def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Colorize text from stdin using ANSI color codes",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        usage="echo 'text' | pipetint [PATTERN] [COLORS...]\n       pipetint --list-colors",
+        usage="echo 'text' | pipetint [PATTERN] [COLORS...]\n"
+        "       pipetint --list-colors\n"
+        "       pipetint --remove-color",
         epilog=_create_help_examples(),
     )
 
@@ -137,6 +232,21 @@ def create_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Force line-buffered output (flush after each line). "
         "Useful for real-time log streaming without external tools like stdbuf.",
+    )
+
+    parser.add_argument(
+        "--remove-color",
+        "--strip-color",
+        action="store_true",
+        help="Remove all ANSI color codes from input (strip colors to plain text)",
+    )
+
+    parser.add_argument(
+        "--output-format",
+        choices=["ansi", "plain", "html"],
+        default="ansi",
+        help="Output format: ansi (default, with color codes), plain (no colors), "
+        "html (HTML with inline styles)",
     )
 
     return parser
@@ -312,6 +422,28 @@ def process_line(
     return str(result)
 
 
+def handle_color_removal():
+    """Handle color removal mode (--remove-color or --output-format=plain)."""
+    colorizer = Colorize()
+    try:
+        for line in sys.stdin:
+            clean_line = colorizer.remove_color(line.rstrip("\n"))
+            print(clean_line)
+    except KeyboardInterrupt:
+        sys.exit(1)
+    except BrokenPipeError:
+        sys.exit(0)
+
+
+def _print_result(result: str, output_format: str) -> None:
+    """Print processed line respecting the desired output format."""
+    if output_format == "html":
+        rendered = ansi_to_html(result)
+        print(f"{rendered}<br>")
+    else:
+        print(result)
+
+
 def main():
     """Main CLI entry point."""
     parser = create_parser()
@@ -320,6 +452,11 @@ def main():
     # Handle special commands
     if args.list_colors:
         list_colors()
+        return
+
+    # Handle remove-color mode
+    if args.remove_color or args.output_format == "plain":
+        handle_color_removal()
         return
 
     # Handle help when no stdin and using default arguments
@@ -358,7 +495,8 @@ def main():
             result = process_line(
                 line, pattern, color_groups, args.verbose, args.replace_all
             )
-            print(result)
+
+            _print_result(result, args.output_format)
     except KeyboardInterrupt:
         sys.exit(1)
     except BrokenPipeError:
