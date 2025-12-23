@@ -90,10 +90,10 @@ text.highlight(r'hello', ['red_bg'])    # Natural format (auto-normalized)
 
 ```bash
 # Nested groups - inner blue wins over outer red
-echo "hello world" | pipetint '(h.(ll))' red,blue
+echo "hello world" | pipetint '(h.(ll))' red blue
 
 # Background + foreground coexist (different channels)
-echo "hello world" | pipetint '(h.(ll))' bg_red,blue
+echo "hello world" | pipetint '(h.(ll))' bg_red blue
 # Result: "he" = red background
 #         "ll" = red background + blue foreground
 
@@ -113,11 +113,11 @@ Control priority through regex structure:
 ```bash
 # Want inner group to have higher priority?
 # Put it deeper in the nesting:
-echo "hello" | pipetint '(he(ll)o)' red,blue
+echo "hello" | pipetint '(he(ll)o)' red blue
 # Result: "he" and "o" are red, "ll" is blue (deeper nesting)
 
 # Want same priority? Use sibling groups:
-echo "hello" | pipetint '(he)(ll)' red,blue
+echo "hello" | pipetint '(he)(ll)' red blue
 # Result: Both at same depth, order determines priority
 ```
 
@@ -183,20 +183,24 @@ echo "hello world" | pipetint '(h.*o).*(w.*d)' red blue
 
 ```bash
 # Nested regex groups - inner wins
-echo "hello world" | pipetint '(h.(ll))' red,blue
+echo "hello world" | pipetint '(h.(ll))' red blue
 # Output: "he" is red, "ll" is blue (inner group has higher priority)
 
 # Channel isolation - foreground + background
-echo "hello world" | pipetint '(h.(ll))' bg_red,blue
+echo "hello world" | pipetint '(h.(ll))' bg_red blue
 # Output: "he" = red bg, "ll" = red bg + blue fg
 
 # Color name formats (both work)
 echo "hello" | pipetint 'hello' bg_red    # Official format
 echo "hello" | pipetint 'hello' red_bg    # Natural format (auto-normalized)
 
-# Space or comma-separated colors
-echo "test" | pipetint '(t)(e)' red,blue   # Comma-separated
-echo "test" | pipetint '(t)(e)' red blue   # Space-separated
+# Multiple groups - use space to separate colors
+echo "test" | pipetint '(t)(e)' red blue
+# Output: "t" is red, "e" is blue
+
+# Combine multiple colors on same group - use comma
+echo "ERROR" | pipetint '(ERROR)' red,bold
+# Output: "ERROR" is red AND bold
 ```
 
 ### Options

@@ -16,7 +16,7 @@ echo -e "\x1b[34m\x1b[41mBlue text on red background\x1b[0m"
 echo ""
 
 echo "3. Your actual pipetint example:"
-echo "hello world" | python -m pipetint.cli '(h.(ll))' bg_red,blue
+echo "hello world" | python -m pipetint.cli '(h.(ll))' bg_red blue
 echo ""
 
 echo "4. Same with explicit ANSI codes:"

@@ -154,7 +154,7 @@ Examples:
   {ex2_out}
 
   # Nested groups - inner color wins
-  $ echo "hello world" | pipetint '(h.(ll))' red,blue
+  $ echo "hello world" | pipetint '(h.(ll))' red blue
   {ex3_out}
 
   # Background + foreground

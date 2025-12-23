@@ -29,7 +29,7 @@ Python library and CLI tool for terminal text colorization with **automatic prio
 pip install pipetint
 
 # Smart color nesting - inner groups automatically win
-echo "hello world" | pipetint '(h.(ll))' red,blue
+echo "hello world" | pipetint '(h.(ll))' red blue
 # Output: "he" is red, "ll" is blue (inner has higher priority)
 
 # Pipeline composition - colors preserved across stages
@@ -53,7 +53,7 @@ Automatic priority-based rendering without manual z-index configuration:
 
 ```bash
 # Nested regex groups - inner automatically wins
-echo "hello world" | pipetint '(h.(ll))' red,blue
+echo "hello world" | pipetint '(h.(ll))' red blue
 # "he" is red, "ll" is blue (inner group has higher priority)
 ```
 
@@ -85,7 +85,7 @@ Foreground, background, and attributes work independently:
 
 ```bash
 # Background + foreground coexist in same text
-echo "hello world" | pipetint '(h.(ll))' bg_red,blue
+echo "hello world" | pipetint '(h.(ll))' bg_red blue
 # "he" = red background only
 # "ll" = red background AND blue foreground (both channels!)
 ```
@@ -200,11 +200,11 @@ echo "hello world" | pipetint '(h.*o).*(w.*d)' red blue
 
 ```bash
 # Nested regex groups - inner wins
-echo "hello world" | pipetint '(h.(ll))' red,blue
+echo "hello world" | pipetint '(h.(ll))' red blue
 # Output: "he" is red, "ll" is blue
 
 # Channel isolation - foreground + background
-echo "hello world" | pipetint '(h.(ll))' bg_red,blue
+echo "hello world" | pipetint '(h.(ll))' bg_red blue
 # Output: "he" = red bg, "ll" = red bg + blue fg
 
 # Color name formats (both work)
