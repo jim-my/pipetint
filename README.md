@@ -8,7 +8,7 @@
 [![Python versions](https://img.shields.io/pypi/pyversions/pipetint.svg)](https://pypi.org/project/pipetint)
 [![Production Ready](https://img.shields.io/badge/status-production%20ready-brightgreen.svg)](https://github.com/jim-my/pipetint)
 
-Python library and CLI tool for terminal text colorization with **automatic priority-based color nesting**, **pipeline composition**, and **ANSI-aware pattern matching**. Zero dependencies, pure Python.
+Python library and CLI tool for terminal text colorization with **automatic priority-based color nesting**, **pipeline composition**, **ANSI-aware pattern matching**, and **reusable TOML-backed themes and rules**.
 
 ---
 
@@ -35,6 +35,12 @@ echo "hello world" | pipetint '(h.(ll))' red blue
 # Pipeline composition - colors preserved across stages
 echo "hello world" | pipetint 'hello' red | pipetint 'world' blue
 # Output: "hello" is red, "world" is blue
+
+# Built-in themes
+echo "ERROR at 10:30:45" | pipetint --theme log-levels
+
+# Named rules from config
+echo "ERROR at 10:30:45" | pipetint --config pipetint.toml --rule errors,timestamps
 
 # Python API with type-safe constants
 from pipetint import colored, RED, BLUE, BOLD
@@ -161,7 +167,8 @@ pip install -e .
 
 **Requirements:**
 - Python 3.9+
-- Zero dependencies (pure Python)
+- Pure Python
+- `tomli` only on Python < 3.11 for TOML config support
 
 ---
 
@@ -171,11 +178,13 @@ pip install -e .
 - **🔍 ANSI-Aware Matching**: Patterns match original text, ignoring color codes
 - **🎯 Channel Isolation**: Foreground, background, and attributes work independently
 - **🔗 Pipeline Composition**: Colors preserved across pipeline stages
+- **🗂️ TOML Config Rules**: Save and reuse named highlighting rules
+- **🎛️ Built-In Themes**: Apply ready-made themes like `log-levels` and `git-diff`
 - **🔒 Production Safe**: No monkey patching or global state pollution
 - **🎭 Multiple APIs**: Choose your style - fluent, functional, or global
 - **⚡ High Performance**: Efficient implementation with minimal overhead
 - **🧪 Well Tested**: 143 tests with comprehensive coverage
-- **📦 Zero Dependencies**: Pure Python implementation
+- **📦 Minimal Dependencies**: Pure Python, with `tomli` only on Python < 3.11
 - **🖥️ Cross Platform**: Works on Linux, macOS, and Windows
 
 ---

@@ -55,6 +55,24 @@ class TestCreateParser:
         args = parser.parse_args(["pattern", "--unbuffered"])
         assert args.unbuffered is True
 
+        # Test config and theme args
+        args = parser.parse_args(["--config", "pipetint.toml", "--theme", "log-levels"])
+        assert args.config == "pipetint.toml"
+        assert args.theme == "log-levels"
+
+        args = parser.parse_args(["--rule", "errors,timestamps"])
+        assert args.rule == "errors,timestamps"
+
+        args = parser.parse_args(["--list-themes"])
+        assert args.list_themes is True
+
+        args = parser.parse_args(["--show-theme", "log-levels"])
+        assert args.show_theme == "log-levels"
+
+        args = parser.parse_args(["--preview", "--sample", "sample.log"])
+        assert args.preview is True
+        assert args.sample == "sample.log"
+
     def test_parser_no_args(self):
         """Test parser with no arguments."""
         parser = create_parser()
@@ -168,6 +186,13 @@ class TestMain:
                         pattern="(.*)",
                         colors=["black,bg_yellow,swapcolor"],
                         list_colors=False,
+                        list_themes=False,
+                        show_theme=None,
+                        config=None,
+                        rule=None,
+                        theme=None,
+                        preview=False,
+                        sample=None,
                         remove_color=False,  # New attribute for color removal feature
                         output_format="ansi",  # New attribute for output format feature
                     )
@@ -223,6 +248,20 @@ class TestMain:
             with patch("pipetint.cli.list_colors") as mock_list_colors:
                 main()
                 mock_list_colors.assert_called_once()
+
+    def test_main_list_themes(self):
+        """Test main with list themes option."""
+        with patch("sys.argv", ["pipetint", "--list-themes"]):
+            with patch("pipetint.cli.list_themes") as mock_list_themes:
+                main()
+                mock_list_themes.assert_called_once()
+
+    def test_main_show_theme(self):
+        """Test main with show-theme option."""
+        with patch("sys.argv", ["pipetint", "--show-theme", "log-levels"]):
+            with patch("pipetint.cli.show_theme") as mock_show_theme:
+                main()
+                mock_show_theme.assert_called_once_with("log-levels")
 
     def test_main_invalid_regex(self):
         """Test main with invalid regex pattern."""
@@ -531,3 +570,95 @@ class TestCLIIntegration:
                     # Group 2 should have blue (34) and underline (4)
                     assert "\033[34m" in output  # Blue
                     assert "\033[4m" in output  # Underline
+
+    def test_cli_theme_applies_built_in_rules(self):
+        """Test built-in theme execution."""
+        test_input = "ERROR at 10:30:45\n"
+
+        with patch("sys.argv", ["pipetint", "--theme", "log-levels"]):
+            with patch("sys.stdin", io.StringIO(test_input)):
+                with patch("sys.stdout", io.StringIO()) as mock_stdout:
+                    main()
+
+                    output = mock_stdout.getvalue()
+                    assert "\033[" in output
+                    assert "ERROR" in output
+                    assert "10:30:45" in output
+
+    def test_cli_rule_uses_config_file(self, tmp_path):
+        """Test named rule execution from TOML config."""
+        config_path = tmp_path / "pipetint.toml"
+        config_path.write_text(
+            """
+version = 1
+
+[[rules]]
+name = "errors"
+pattern = "ERROR"
+colors = ["red", "bold"]
+""".strip()
+            + "\n",
+            encoding="utf-8",
+        )
+        test_input = "ERROR happened\n"
+
+        argv = ["pipetint", "--config", str(config_path), "--rule", "errors"]
+        with patch("sys.argv", argv):
+            with patch("sys.stdin", io.StringIO(test_input)):
+                with patch("sys.stdout", io.StringIO()) as mock_stdout:
+                    main()
+
+                    output = mock_stdout.getvalue()
+                    assert "\033[31m" in output
+                    assert "\033[1m" in output
+
+    def test_cli_preview_with_sample_file(self, tmp_path):
+        """Test preview mode reads from the sample file path."""
+        sample_path = tmp_path / "sample.log"
+        sample_path.write_text("ERROR at 10:30:45\n", encoding="utf-8")
+
+        argv = [
+            "pipetint",
+            "--preview",
+            "--theme",
+            "log-levels",
+            "--sample",
+            str(sample_path),
+        ]
+        with patch("sys.argv", argv):
+            with patch("sys.stdin", io.StringIO("")):
+                with patch("sys.stdout", io.StringIO()) as mock_stdout:
+                    main()
+
+                    output = mock_stdout.getvalue()
+                    assert "\033[" in output
+                    assert "ERROR" in output
+
+    def test_cli_direct_args_ignore_implicit_config_defaults(
+        self, tmp_path, monkeypatch
+    ):
+        """Existing positional CLI flow should not be hijacked by implicit config."""
+        config_path = tmp_path / "pipetint.toml"
+        config_path.write_text(
+            """
+version = 1
+default_rules = ["errors"]
+
+[[rules]]
+name = "errors"
+pattern = "ERROR"
+colors = ["blue"]
+""".strip()
+            + "\n",
+            encoding="utf-8",
+        )
+        monkeypatch.chdir(tmp_path)
+
+        with patch("sys.argv", ["pipetint", "ERROR", "red"]):
+            with patch("sys.stdin", io.StringIO("ERROR\n")):
+                with patch("sys.stdout", io.StringIO()) as mock_stdout:
+                    main()
+
+                    output = mock_stdout.getvalue()
+                    assert "\033[31m" in output
+                    assert "\033[34m" not in output

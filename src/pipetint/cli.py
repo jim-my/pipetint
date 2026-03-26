@@ -5,8 +5,18 @@ import contextlib
 import html
 import re
 import sys
+from collections.abc import Iterator
+from pathlib import Path
+from typing import Optional
 
+from .config import (
+    ConfigError,
+    discover_config_path,
+    load_config,
+    resolve_selected_rules,
+)
 from .core import Colorize, ColorizedString
+from .themes import BUILTIN_THEMES
 
 
 def ansi_to_html(text: str) -> str:
@@ -249,7 +259,42 @@ def create_parser() -> argparse.ArgumentParser:
         "html (HTML with inline styles)",
     )
 
+    parser.add_argument("--config", help="Path to a TOML config file")
+    parser.add_argument("--rule", help="Comma-separated named rules from config")
+    parser.add_argument("--theme", help="Built-in or config-defined theme name")
+    parser.add_argument(
+        "--list-themes", action="store_true", help="List available themes and exit"
+    )
+    parser.add_argument("--show-theme", help="Show details for a theme and exit")
+    parser.add_argument(
+        "--preview",
+        action="store_true",
+        help="Preview resolved rules against stdin or --sample input",
+    )
+    parser.add_argument("--sample", help="Sample file path for preview mode")
+
     return parser
+
+
+def list_themes() -> None:
+    """List built-in themes."""
+    print("Available Themes")
+    print("=" * 60)
+    for theme_name, theme in sorted(BUILTIN_THEMES.items()):
+        print(f"{theme_name}: {theme['description']}")
+
+
+def show_theme(theme_name: str) -> None:
+    """Show details for one built-in theme."""
+    theme = BUILTIN_THEMES.get(theme_name)
+    if theme is None:
+        raise ConfigError(f"Unknown theme: {theme_name}")
+    print(theme_name)
+    print("=" * len(theme_name))
+    print(theme["description"])
+    print()
+    for rule in theme["rules"]:
+        print(f"- {rule['name']}: {rule['pattern']} -> {','.join(rule['colors'])}")
 
 
 def _display_foreground_colors(foreground: list[str]) -> None:
@@ -444,44 +489,149 @@ def _print_result(result: str, output_format: str) -> None:
         print(result)
 
 
-def main():
-    """Main CLI entry point."""
-    parser = create_parser()
-    args = parser.parse_args()
+def _parse_selected_rule_names(rule_arg: Optional[str]) -> list[str]:
+    """Parse comma-separated rule names."""
+    if not rule_arg:
+        return []
+    return [name.strip() for name in rule_arg.split(",") if name.strip()]
 
-    # Handle special commands
+
+def _load_runtime_config(config_arg: Optional[str]) -> Optional[dict]:
+    """Load config if configured explicitly or discoverable."""
+    config_path = discover_config_path(
+        explicit_path=Path(config_arg) if config_arg else None,
+    )
+    if config_path is None:
+        return None
+    return load_config(config_path)
+
+
+def _compile_rule_patterns(
+    resolved_rules: list[dict],
+) -> list[tuple[re.Pattern, list[list[str]], bool]]:
+    """Compile resolved rules into runtime structures."""
+    compiled_rules = []
+    for rule in resolved_rules:
+        flags = 0 if rule.get("case_sensitive", False) else re.IGNORECASE
+        try:
+            pattern = re.compile(rule["pattern"], flags)
+        except re.error as exc:
+            raise ConfigError(
+                f"Invalid regex in rule '{rule['name']}': {rule['pattern']}"
+            ) from exc
+        compiled_rules.append((
+            pattern,
+            [rule["colors"]],
+            rule.get("replace_all", False),
+        ))
+    return compiled_rules
+
+
+def _handle_special_commands(
+    args: argparse.Namespace, parser: argparse.ArgumentParser
+) -> bool:
+    """Handle command modes that exit early."""
     if args.list_colors:
         list_colors()
-        return
+        return True
 
-    # Handle remove-color mode
+    if args.list_themes:
+        list_themes()
+        return True
+
+    if args.show_theme:
+        try:
+            show_theme(args.show_theme)
+        except ConfigError:
+            sys.exit(2)
+        return True
+
     if args.remove_color or args.output_format == "plain":
         handle_color_removal()
-        return
+        return True
 
-    # Handle help when no stdin and using default arguments
     if (
         sys.stdin.isatty()
         and args.pattern == "(.*)"
         and args.colors == ["black,bg_yellow,swapcolor"]
     ):
         parser.print_help()
-        return
+        return True
 
-    # Compile regex pattern
+    return False
+
+
+def _build_compiled_rules(
+    args: argparse.Namespace,
+) -> list[tuple[re.Pattern, list[list[str]], bool]]:
+    """Build compiled rules for config/theme mode."""
+    config_mode = any([args.config, args.theme, args.rule, args.preview])
+    if not config_mode:
+        return []
+
+    runtime_config = _load_runtime_config(args.config)
+    resolved_rules = resolve_selected_rules(
+        runtime_config,
+        theme_name=args.theme,
+        selected_rule_names=_parse_selected_rule_names(args.rule),
+    )
+    return _compile_rule_patterns(resolved_rules)
+
+
+def _parse_direct_color_groups(
+    args: argparse.Namespace,
+) -> tuple[re.Pattern, list[list[str]]]:
+    """Parse direct positional pattern/color arguments."""
     flags = 0 if args.case_sensitive else re.IGNORECASE
     try:
         pattern = re.compile(args.pattern, flags)
     except re.error:
         sys.exit(1)
 
-    # Parse colors - each argument is a group of colors for one capture group
-    # e.g., ['red,bold', 'blue'] -> [['red', 'bold'], ['blue']]
-    # This means group 1 gets red+bold, group 2 gets blue
     color_groups = []
     for color_arg in args.colors:
         group_colors = [c.strip() for c in color_arg.split(",") if c.strip()]
         color_groups.append(group_colors)
+    return pattern, color_groups
+
+
+def _iter_input_lines(args: argparse.Namespace) -> Iterator[str]:
+    """Yield input lines from stdin or a preview sample file."""
+    if not args.sample:
+        yield from sys.stdin
+        return
+
+    sample_path = Path(args.sample)
+    with sample_path.open(encoding="utf-8") as sample_file:
+        yield from sample_file
+
+
+def _process_with_rules(
+    line: str,
+    compiled_rules: list[tuple[re.Pattern, list[list[str]], bool]],
+    verbose: bool = False,
+) -> str:
+    """Apply resolved rules sequentially to a line."""
+    result = line
+    for pattern, color_groups, replace_all in compiled_rules:
+        result = process_line(result, pattern, color_groups, verbose, replace_all)
+    return result
+
+
+def main():
+    """Main CLI entry point."""
+    parser = create_parser()
+    args = parser.parse_args()
+
+    if _handle_special_commands(args, parser):
+        return
+
+    try:
+        compiled_rules = _build_compiled_rules(args)
+    except ConfigError:
+        sys.exit(2)
+
+    pattern, color_groups = _parse_direct_color_groups(args)
 
     # Configure line-buffered output if requested
     # Uses contextlib.suppress for cleaner handling of missing reconfigure method
@@ -491,10 +641,13 @@ def main():
 
     # Process input
     try:
-        for line in sys.stdin:
-            result = process_line(
-                line, pattern, color_groups, args.verbose, args.replace_all
-            )
+        for line in _iter_input_lines(args):
+            if compiled_rules:
+                result = _process_with_rules(line, compiled_rules, args.verbose)
+            else:
+                result = process_line(
+                    line, pattern, color_groups, args.verbose, args.replace_all
+                )
 
             _print_result(result, args.output_format)
     except KeyboardInterrupt:
@@ -502,6 +655,8 @@ def main():
     except BrokenPipeError:
         # Handle broken pipe gracefully
         sys.exit(0)
+    except OSError:
+        sys.exit(2)
 
 
 if __name__ == "__main__":

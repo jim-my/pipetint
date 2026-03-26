@@ -22,50 +22,48 @@ PipeTint aims to be the **most powerful and user-friendly terminal colorizer** w
 - [x] 143 tests with full coverage
 - [x] CLI with standard options (--verbose, --case-sensitive, --replace-all)
 - [x] Color name normalization (bg_red / red_bg)
-- [x] Zero dependencies
+- [x] TOML config rules and built-in themes
+- [x] Preview mode for sample-based iteration
 
 ---
 
 ## 🚀 Planned Features
 
-### v1.1 - Configuration File Support (Q1 2025)
+### v1.1 - Configuration File Support (Implemented)
 
 **Goal**: Allow users to save common patterns and reuse them without retyping.
 
 **Features**:
-- YAML configuration file (.pipetintrc.yaml)
-- Standard locations: `~/.pipetintrc`, `./.pipetintrc`, `$XDG_CONFIG_HOME/pipetint/config.yaml`
+- TOML configuration file (`pipetint.toml`)
+- Standard locations: `./pipetint.toml`, `./.pipetint.toml`, `$XDG_CONFIG_HOME/pipetint/config.toml`
 - Named rule sets for different use cases
-- Environment-specific overrides
+- Explicit config path override via `--config`
 
 **Example**:
-```yaml
-rules:
-  - name: error-logs
-    pattern: 'ERROR|CRITICAL'
-    colors: [red, bold]
+```toml
+version = 1
+default_rules = ["timestamps"]
 
-  - name: timestamps
-    pattern: '\d{2}:\d{2}:\d{2}'
-    colors: [blue]
+[[rules]]
+name = "error-logs"
+pattern = "ERROR|CRITICAL"
+colors = ["red", "bold"]
 
-  - name: ip-addresses
-    pattern: '\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'
-    colors: [green]
+[[rules]]
+name = "timestamps"
+pattern = "\\d{2}:\\d{2}:\\d{2}"
+colors = ["blue"]
 ```
 
 **CLI Usage**:
 ```bash
-# Use all rules from config
-cat log.txt | pipetint --config
-
 # Use specific rule set
-cat log.txt | pipetint --rule error-logs,timestamps
+cat log.txt | pipetint --config ./pipetint.toml --rule error-logs,timestamps
 ```
 
 ---
 
-### v1.2 - Built-in Themes (Q1 2025)
+### v1.2 - Built-in Themes (Implemented)
 
 **Goal**: Provide ready-to-use color schemes for common use cases.
 
@@ -85,14 +83,7 @@ cat app.log | pipetint --theme log-levels
 pipetint --list-themes
 
 # Show theme details
-pipetint --theme log-levels --show
-```
-
-**Python API**:
-```python
-from pipetint.themes import LogLevelsTheme
-
-result = LogLevelsTheme().apply(log_text)
+pipetint --show-theme log-levels
 ```
 
 ---
